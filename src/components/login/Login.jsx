@@ -4,28 +4,33 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function Login() {
   return (
-    <div>
-        <h2 className="text-center text-primary fw-bold mb-4">Connexion</h2>
-        <Form>
-          <Form.Group className="mb-3" controlId="email">
-            <Form.Label>Adresse Email</Form.Label>
-            <Form.Control type="email" placeholder="Entrez votre email" />
-          </Form.Group>
+    <div >
+      <div className="d-flex justify-content-center">
+        <img src="MAP2-300.png" alt="Map" className="img-fluid mb-4 w-25" />
+      </div>
 
-          <Form.Group className="mb-3" controlId="password">
-            <Form.Label>Mot de passe</Form.Label>
-            <Form.Control type="password" placeholder="Entrez votre mot de passe" />
-          </Form.Group>
+      <h2 className="text-center fw-bold mb-4 primaryColor">Bon retour parmi nous !</h2>
 
-          <Button variant="danger" type="submit" className="w-100 mb-3">
-            Se connecter
-          </Button>
-        </Form>
-        <a href="#" className="text-danger text-center d-block">Mot de passe oublié ?</a>
-        <div className="mt-4 text-center">
-          <p>Vous ne possédez pas de compte ?</p>
-          <a href='/register'>Inscrivez vous ici</a>
-        </div>
+       <Form>
+        <Form.Control type="email" placeholder="Entrez votre email" className="mb-3" />
+
+        <Form.Control type="password" placeholder="Entrez votre mot de passe" className="mb-3" />
+
+        <Button type="submit" className="w-100 mb-3 secondaryButton">
+          Se connecter
+        </Button>
+
+        <Button className="w-100 mb-3 d-flex align-items-center justify-content-center primaryButton">
+          <i className="bi bi-google me-2" />
+          Se connecter avec Google
+        </Button>
+
+      </Form>
+      <a href="#" className="text-center d-block secondaryColor">Mot de passe oublié ?</a>
+      <div className="mt-4 text-center ">
+        <p>Vous ne possédez pas de compte ?</p>
+        <a href='/register' className="primaryColor">Inscrivez vous ici</a>
+      </div>
     </div>
   );
 }

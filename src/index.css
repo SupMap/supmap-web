@@ -18,7 +18,40 @@ body {
   padding: 1rem;
 } */
 
+:root {
+  --primaryColor: #3d2683;
+  --secondaryColor: #F15B4E;
+}
+
 #carte {
-  height: calc(100vh );
+  height: calc(100vh);
   width: 100vw;
+}
+
+.primaryColor {
+  color: var(--primaryColor);
+}
+
+.secondaryColor {
+  color: var(--secondaryColor);
+}
+
+.primaryButton, .primaryButton:disabled {
+  background-color: var(--primaryColor);
+  color: white;
+  border: none;
+}
+
+.primaryButton:hover {
+  background-color: rgba(61, 38, 131, 0.8);
+}
+
+.secondaryButton, .secondaryButton:disabled  {
+  background-color: var(--secondaryColor);
+  color: white;
+  border: none;
+}
+
+.secondaryButton:hover {
+  background-color: rgba(241, 91, 78, 0.8);
 }
