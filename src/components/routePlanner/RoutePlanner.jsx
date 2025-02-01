@@ -11,7 +11,7 @@ export default function RoutePlanner({ onStartNavigation }) {
     };
 
     return (
-        <div className="position-absolute start-0 ms-3 p-3 shadow-lg" style={{ top: '100px', width:'300px', zIndex: 2000 }}>
+        <div className="position-absolute start-0 ms-3 p-3 shadow-lg bg-white bg-opacity-75" style={{ top: '100px', width:'300px', zIndex: 2000 }}>
             <Form>
                 <Form.Group className="mb-3">
                     <Form.Control

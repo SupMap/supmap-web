@@ -9,8 +9,8 @@ const containerStyle = {
 };
 
 const defaultCenter = {
-    lat: 47.383333, // Latitude par défaut (Paris)
-    lng: 0.683333  // Longitude par défaut
+    lat: 47.383333, 
+    lng: 0.683333 
 };
 
 export default function Map() {

@@ -1,36 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Biryani:wght@300;400;600;900&display=swap');
-/* 
-body {
-  background-color: #3d2683;
-  margin: 0;
-  padding: 0;
-  font-family: 'Biryani', sans-serif;
-  height: 100vh;
-} */
-
-/* .main {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: calc(100vh - 4.5rem);
-  overflow-y: auto;
-  box-sizing: border-box;
-  padding: 1rem;
-} */
-
 :root {
   --primaryColor: #3d2683;
   --secondaryColor: #F15B4E;
 }
-
-/* .map {
-  height: 100vh;
-  width: 100vw;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-} */
 
 .primaryColor {
   color: var(--primaryColor);

@@ -8,7 +8,7 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const handleLogin = async (event) => {
+    async function handleLogin(event) {
         event.preventDefault();
 
         try {
