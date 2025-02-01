@@ -23,10 +23,14 @@ body {
   --secondaryColor: #F15B4E;
 }
 
-#carte {
-  height: calc(100vh);
+/* .map {
+  height: 100vh;
   width: 100vw;
-}
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+} */
 
 .primaryColor {
   color: var(--primaryColor);
