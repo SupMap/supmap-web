@@ -1,7 +1,7 @@
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from '@react-google-maps/api';
 import { useEffect, useState } from 'react';
 
-const VITE_GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "AIzaSyBb9PMJCEl3drV8JSElmSp_SJmg9ul9tlQ"
+const VITE_GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 const containerStyle = {
     width: '100vw',
@@ -13,7 +13,7 @@ const defaultCenter = {
     lng: 0.683333 
 };
 
-export default function Map() {
+export default function Map({ directions }) {
     const [center, setCenter] = useState(defaultCenter);
     const [userLocation, setUserLocation] = useState(null);
 
@@ -26,7 +26,7 @@ export default function Map() {
                     setUserLocation({ lat: latitude, lng: longitude });
                 },
                 (error) => {
-                    console.log("Erreur de localisation : ", error);
+                    console.log("Erreur de localisation :", error);
                     alert("La localisation est désactivée ou refusée.");
                 }
             );
@@ -40,10 +40,11 @@ export default function Map() {
             <GoogleMap
                 mapContainerStyle={containerStyle}
                 center={center}
-                zoom={17}        
+                zoom={17}
             >
-                {userLocation && <Marker position={userLocation} title='Votre position'/>}
+                {userLocation && <Marker position={userLocation} title="Votre position" />}
+                {directions && <DirectionsRenderer directions={directions} />}
             </GoogleMap>
         </LoadScript>
     );
-};
+}
