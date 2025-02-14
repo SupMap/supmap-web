@@ -19,6 +19,7 @@ export default function RoutePlanner({ onStartNavigation }) {
                         placeholder="Choisissez votre point de départ"
                         value={startPoint}
                         onChange={(e) => setStartPoint(e.target.value)}
+                        
                     />
                 </Form.Group>
 
@@ -28,12 +29,14 @@ export default function RoutePlanner({ onStartNavigation }) {
                         placeholder="Choisissez votre destination"
                         value={destination}
                         onChange={(e) => setDestination(e.target.value)}
+                        
                     />
                 </Form.Group>
 
                 <Button
                     onClick={handleStartClick}
                     className="w-100 primaryButton"
+                    style={{ fontWeight: 'bold' }}
                 >
                     Démarrer
                 </Button>

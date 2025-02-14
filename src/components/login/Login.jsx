@@ -1,9 +1,10 @@
-import React, {useState} from 'react';
-import {Button, Form} from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Button, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 
-export default function Login() {
+
+export default function Login({ toggleRegisterModal }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -56,10 +57,19 @@ export default function Login() {
                 </Button>
             </Form>
 
-            <a href="#" className="text-center d-block secondaryColor">Mot de passe oublié ?</a>
-            <div className="mt-4 text-center ">
+            <div className="text-center">
+                <a href="#" className="secondaryColor">Mot de passe oublié ?</a>
+            </div>
+
+            <div className="mt-4 text-center">
                 <p>Vous ne possédez pas de compte ?</p>
-                <a href='/register' className="primaryColor">Inscrivez-vous ici</a>
+                <span 
+                    className="primaryColor fw-bold cursor-pointer"
+                    style={{ cursor: "pointer" }}
+                    onClick={toggleRegisterModal}
+                >
+                    Inscrivez-vous ici
+                </span>
             </div>
         </div>
     );
