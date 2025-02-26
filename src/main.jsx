@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Root from './components/root/Root.jsx'
 import './index.css'
-import HomePage from './components/HomePage/HomePage.jsx'
+import HomePage from './components/homePage/HomePage.jsx'
 
 const router = createBrowserRouter([
   {

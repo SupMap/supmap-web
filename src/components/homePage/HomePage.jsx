@@ -8,9 +8,10 @@ import { useState } from "react";
 export default function HomePage() {
 
     const [directions, setDirections] = useState(null)
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    async function handleNavigationStart(start, destination) {
-        const response = await axios.get(`http://localhost:8080/api/directions?origin=${start}&destination=${destination}`);
+    async function handleNavigationStart(start, destination, travelMode) {
+        const response = await axios.get(`http://localhost:8080/api/directions?origin=${start}&destination=${destination}&mode=${travelMode}`);
 
         if (response.data) {
             console.log("Itinéraire récupéré :", response.data);
@@ -21,7 +22,7 @@ export default function HomePage() {
                 {
                     origin: start,
                     destination: destination,
-                    travelMode: window.google.maps.TravelMode.DRIVING
+                    travelMode: window.google.maps.TravelMode[travelMode.toUpperCase()]
                 },
                 (result, status) => {
                     if (status === "OK") {
@@ -38,8 +39,8 @@ export default function HomePage() {
 
     return (
         <div>
-            <UserConnexionButton />
-            <RoutePlanner onStartNavigation={handleNavigationStart} />
+            <UserConnexionButton setIsModalOpen={setIsModalOpen} />
+            {!isModalOpen && <RoutePlanner onStartNavigation={handleNavigationStart} />}
             <div className="map">
                 <Map directions={directions} />
             </div>
