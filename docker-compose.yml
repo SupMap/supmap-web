@@ -1,8 +1,12 @@
+name: supmap
+
 services:
   web:
+    container_name: supmap-web
     build:
       context: .  
       dockerfile: Dockerfile
+    image: supmap-web
     ports:
       - "5173:80"  
     depends_on:
@@ -11,9 +15,11 @@ services:
       - supmap-network
 
   api:
+    container_name: supmap-api
     build:
       context: ../supmap-api  
       dockerfile: Dockerfile
+    image: supmap-api
     ports:
       - "8080:8080"
     environment:
@@ -37,6 +43,7 @@ services:
       POSTGRES_PASSWORD: supmap
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./db-init/init.sql:/docker-entrypoint-initdb.d/init.sql  
     networks:
       - supmap-network
 
