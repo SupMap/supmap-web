@@ -9,24 +9,22 @@ const containerStyle = {
 
 const defaultCenter = { lat: 47.383333, lng: 0.683333 };
 
-export default function Map({ graphhopperResponse }) {
+export default function Map({ graphhopperResponse, incidents }) {
     const [center, setCenter] = useState(defaultCenter);
     const [userLocation, setUserLocation] = useState(null);
     const [routePath, setRoutePath] = useState([]);
     const mapRef = useRef(null);
 
-    // Zoom initial pour la localisation utilisateur (plus rapproché)
     const initialZoom = 14;
     const [mapZoom, setMapZoom] = useState(initialZoom);
 
     const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-    // Stocke l'instance de la carte
     const onLoad = (map) => {
         mapRef.current = map;
     };
 
-    // Centrage initial sur la position de l'utilisateur
+    // Centrage initial sur la position utilisateur
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -50,17 +48,14 @@ export default function Map({ graphhopperResponse }) {
         }
     }, []);
 
-    // Décodage de la polyline et mise à jour de l'itinéraire
+    // Décodage de la polyline de l'itinéraire GraphHopper
     useEffect(() => {
         setRoutePath([]);
         if (graphhopperResponse) {
-            console.log("GraphHopper response:", graphhopperResponse);
             try {
                 const encodedPolyline = graphhopperResponse.paths[0].points;
-                console.log("Encoded polyline:", encodedPolyline);
                 const decoded = polyline.decode(encodedPolyline);
                 const path = decoded.map(([lat, lng]) => ({ lat, lng }));
-                console.log("Decoded path:", path);
                 setRoutePath(path);
             } catch (err) {
                 console.error("Erreur lors du décodage de la polyline:", err);
@@ -68,7 +63,7 @@ export default function Map({ graphhopperResponse }) {
         }
     }, [graphhopperResponse]);
 
-    // Ajustement de la vue de la carte en fonction de l'itinéraire
+    // Ajustement automatique de la vue en fonction de l'itinéraire
     useEffect(() => {
         if (routePath.length > 0 && mapRef.current) {
             const bounds = new window.google.maps.LatLngBounds();
@@ -77,7 +72,6 @@ export default function Map({ graphhopperResponse }) {
             });
             mapRef.current.fitBounds(bounds);
         } else if (routePath.length === 0 && mapRef.current && userLocation) {
-            // Si aucun itinéraire n'est présent, recentrer sur la localisation de l'utilisateur avec le zoom initial
             mapRef.current.setCenter(userLocation);
             mapRef.current.setZoom(initialZoom);
         }
@@ -85,19 +79,28 @@ export default function Map({ graphhopperResponse }) {
 
     return (
         <LoadScript googleMapsApiKey={googleMapsApiKey}>
-            <GoogleMap
-                mapContainerStyle={containerStyle}
-                center={center}
-                zoom={mapZoom}
-                onLoad={onLoad}
-            >
+            <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={mapZoom} onLoad={onLoad}>
                 {userLocation && <Marker position={userLocation} title="Votre position" />}
                 {routePath.length > 0 && (
-                    <Polyline
-                        path={routePath}
-                        options={{ strokeColor: '#3d2683', strokeWeight: 4 }}
-                    />
+                    <Polyline path={routePath} options={{ strokeColor: '#3d2683', strokeWeight: 4 }} />
                 )}
+                {/* Affichage des incidents à partir des DTO */}
+                {incidents && incidents.map(incident => {
+                    const position = { lat: incident.latitude, lng: incident.longitude };
+                    // Par exemple, pour typeId 1 on affiche une icône accident, sinon une icône générique
+                    const iconUrl = incident.typeId === 1 ? '/accident.svg' : '/incident.svg';
+                    return (
+                        <Marker
+                            key={incident.typeId + "_" + incident.latitude + "_" + incident.longitude}
+                            position={position}
+                            title={`Incident (type ${incident.typeId})`}
+                            icon={{
+                                url: iconUrl,
+                                scaledSize: new window.google.maps.Size(30, 30)
+                            }}
+                        />
+                    );
+                })}
             </GoogleMap>
         </LoadScript>
     );
