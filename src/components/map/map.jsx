@@ -67,9 +67,56 @@ export default function Map({ graphhopperResponse, incidents }) {
     }, [routePath, userLocation]);
 
     return (
-        <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={mapZoom} onLoad={onLoad}>
-            {userLocation && <Marker position={userLocation} title="Votre position" />}
-            {routePath.length > 0 && <Polyline path={routePath} options={{ strokeColor: '#3d2683', strokeWeight: 4 }} />}
+        <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={center}
+            zoom={mapZoom}
+            onLoad={onLoad}
+        >
+            
+            {userLocation && (
+                <Marker position={userLocation} title="Votre position" />
+            )}
+
+            
+            {routePath.length > 0 && (
+                <Polyline
+                    path={routePath}
+                    options={{ strokeColor: '#3d2683', strokeWeight: 4 }}
+                />
+            )}
+
+            
+            {routePath.length > 0 && (
+                <Marker
+                    position={routePath[0]}
+                    title="Point de départ"
+                    icon={{
+                        url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30">
+                                <text x="0" y="20">📍</text>
+                            </svg>`),
+                        scaledSize: new window.google.maps.Size(30, 30)
+                    }}
+                />
+            )}
+
+            
+            {routePath.length > 0 && (
+                <Marker
+                    position={routePath[routePath.length - 1]}
+                    title="Destination"
+                    icon={{
+                        url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30">
+                                <text x="0" y="20">🏁</text>
+                            </svg>`),
+                        scaledSize: new window.google.maps.Size(30, 30)
+                    }}
+                />
+            )}
+
+            
             {incidents && incidents.map((incident, index) => {
                 const position = { lat: incident.latitude, lng: incident.longitude };
                 const iconUrl = incident.typeId === 1 ? '/accident.svg' : '/incident.svg';
