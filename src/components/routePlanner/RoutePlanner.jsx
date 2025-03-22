@@ -29,7 +29,9 @@ export default function RoutePlanner({ onStartNavigation }) {
     };
 
     const handleStartClick = () => {
-        onStartNavigation(startPoint, destination, travelMode);
+        const startWithoutCommma = startPoint.replace(/,/g, ''); // Supprime les virgules
+        const destinationWithoutComma = destination.replace(/,/g, ''); // Supprime les virgules
+        onStartNavigation(startWithoutCommma, destinationWithoutComma, travelMode);
     };
 
     return (
