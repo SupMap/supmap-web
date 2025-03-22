@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 export default function RoutePlanner({ onStartNavigation }) {
     const [startPoint, setStartPoint] = useState('');
     const [destination, setDestination] = useState('');
-    const [travelMode, setTravelMode] = useState('driving'); // État pour le mode de transport
+    const [travelMode, setTravelMode] = useState('car'); // État pour le mode de transport
 
     function handleStartClick() {
         onStartNavigation(startPoint, destination, travelMode);
@@ -35,13 +35,13 @@ export default function RoutePlanner({ onStartNavigation }) {
 
                 {/* Sélecteur de mode de transport */}
                 <div className="d-flex justify-content-between mb-3">
-                    <Button variant={travelMode === 'driving' ? 'primary' : 'light'} onClick={() => setTravelMode('driving')}>
+                    <Button variant={travelMode === 'car' ? 'primary' : 'light'} onClick={() => setTravelMode('car')}>
                         <Car size={25} />
                     </Button>
-                    <Button variant={travelMode === 'bicycling' ? 'primary' : 'light'} onClick={() => setTravelMode('bicycling')}>
+                    <Button variant={travelMode === 'bike' ? 'primary' : 'light'} onClick={() => setTravelMode('bike')}>
                         <Bike size={25} />
                     </Button>
-                    <Button variant={travelMode === 'walking' ? 'primary' : 'light'} onClick={() => setTravelMode('walking')}>
+                    <Button variant={travelMode === 'foot' ? 'primary' : 'light'} onClick={() => setTravelMode('foot')}>
                         <Footprints size={25} />
                     </Button>
                 </div>
