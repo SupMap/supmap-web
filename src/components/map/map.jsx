@@ -1,4 +1,4 @@
-import { GoogleMap, LoadScript, Marker, Polyline } from '@react-google-maps/api';
+import { GoogleMap, Marker, Polyline } from '@react-google-maps/api';
 import { useEffect, useState, useRef } from 'react';
 import polyline from '@mapbox/polyline';
 
@@ -14,23 +14,18 @@ export default function Map({ graphhopperResponse, incidents }) {
     const [userLocation, setUserLocation] = useState(null);
     const [routePath, setRoutePath] = useState([]);
     const mapRef = useRef(null);
-
     const initialZoom = 14;
     const [mapZoom, setMapZoom] = useState(initialZoom);
-
-    const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
     const onLoad = (map) => {
         mapRef.current = map;
     };
 
-    // Centrage initial sur la position utilisateur
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    const { latitude, longitude } = position.coords;
-                    const userPos = { lat: latitude, lng: longitude };
+                    const userPos = { lat: position.coords.latitude, lng: position.coords.longitude };
                     setCenter(userPos);
                     setUserLocation(userPos);
                     if (mapRef.current) {
@@ -43,12 +38,9 @@ export default function Map({ graphhopperResponse, incidents }) {
                     alert("La localisation est désactivée ou refusée.");
                 }
             );
-        } else {
-            alert("La géolocalisation n'est pas supportée par votre navigateur.");
         }
     }, []);
 
-    // Décodage de la polyline de l'itinéraire GraphHopper
     useEffect(() => {
         setRoutePath([]);
         if (graphhopperResponse) {
@@ -63,13 +55,10 @@ export default function Map({ graphhopperResponse, incidents }) {
         }
     }, [graphhopperResponse]);
 
-    // Ajustement automatique de la vue en fonction de l'itinéraire
     useEffect(() => {
         if (routePath.length > 0 && mapRef.current) {
             const bounds = new window.google.maps.LatLngBounds();
-            routePath.forEach(point => {
-                bounds.extend(new window.google.maps.LatLng(point.lat, point.lng));
-            });
+            routePath.forEach(point => bounds.extend(new window.google.maps.LatLng(point.lat, point.lng)));
             mapRef.current.fitBounds(bounds);
         } else if (routePath.length === 0 && mapRef.current && userLocation) {
             mapRef.current.setCenter(userLocation);
@@ -78,30 +67,21 @@ export default function Map({ graphhopperResponse, incidents }) {
     }, [routePath, userLocation]);
 
     return (
-        <LoadScript googleMapsApiKey={googleMapsApiKey}>
-            <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={mapZoom} onLoad={onLoad}>
-                {userLocation && <Marker position={userLocation} title="Votre position" />}
-                {routePath.length > 0 && (
-                    <Polyline path={routePath} options={{ strokeColor: '#3d2683', strokeWeight: 4 }} />
-                )}
-                {/* Affichage des incidents à partir des DTO */}
-                {incidents && incidents.map(incident => {
-                    const position = { lat: incident.latitude, lng: incident.longitude };
-                    // Par exemple, pour typeId 1 on affiche une icône accident, sinon une icône générique
-                    const iconUrl = incident.typeId === 1 ? '/accident.svg' : '/incident.svg';
-                    return (
-                        <Marker
-                            key={incident.typeId + "_" + incident.latitude + "_" + incident.longitude}
-                            position={position}
-                            title={`Incident (type ${incident.typeId})`}
-                            icon={{
-                                url: iconUrl,
-                                scaledSize: new window.google.maps.Size(30, 30)
-                            }}
-                        />
-                    );
-                })}
-            </GoogleMap>
-        </LoadScript>
+        <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={mapZoom} onLoad={onLoad}>
+            {userLocation && <Marker position={userLocation} title="Votre position" />}
+            {routePath.length > 0 && <Polyline path={routePath} options={{ strokeColor: '#3d2683', strokeWeight: 4 }} />}
+            {incidents && incidents.map((incident, index) => {
+                const position = { lat: incident.latitude, lng: incident.longitude };
+                const iconUrl = incident.typeId === 1 ? '/accident.svg' : '/incident.svg';
+                return (
+                    <Marker
+                        key={index}
+                        position={position}
+                        title={`Incident (type ${incident.typeId})`}
+                        icon={{ url: iconUrl, scaledSize: new window.google.maps.Size(30, 30) }}
+                    />
+                );
+            })}
+        </GoogleMap>
     );
 }

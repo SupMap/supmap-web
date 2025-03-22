@@ -30,3 +30,6 @@
 .secondaryButton:hover {
   background-color: rgba(241, 91, 78, 0.8);
 }
+.pac-container {
+  z-index: 9999 !important;
+}
