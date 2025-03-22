@@ -32,7 +32,7 @@ services:
       - supmap-network
 
   db:
-    image: postgres:latest  
+    image: postgis/postgis:latest  
     container_name: supmap-database
     restart: always
     ports:
@@ -43,7 +43,7 @@ services:
       POSTGRES_PASSWORD: supmap
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./db-init/init.sql:/docker-entrypoint-initdb.d/init.sql  
+      - ./db-init/init.sql:/docker-entrypoint-initdb.d/init.sql 
     networks:
       - supmap-network
 
