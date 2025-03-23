@@ -51,6 +51,7 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
 
                 geocoder.geocode({ location: latlng }, (results, status) => {
                     if (status === "OK" && results[0]) {
+                        console.log(results[0].formatted_address);
                         setStartPoint(results[0].formatted_address);
                         setShowCurrentLocation(false);
                     } else {
