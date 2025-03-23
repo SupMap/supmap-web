@@ -72,6 +72,9 @@ export default function Map({ graphhopperResponse, incidents }) {
             center={center}
             zoom={mapZoom}
             onLoad={onLoad}
+            options={{
+                disableDefaultUI: true 
+              }}
         >
             
             {userLocation && (
