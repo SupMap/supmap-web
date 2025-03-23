@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, InputGroup } from 'react-bootstrap';
-import { Car, Bike, Footprints, MapPin, Flag } from "lucide-react";
+import { Car, Bike, Footprints, MapPin, Flag, QrCode } from "lucide-react";
 import { Autocomplete } from '@react-google-maps/api';
+import QRCode from 'react-qr-code';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function RoutePlanner({ onStartNavigation, routes = [], setGraphhopperData }) {
@@ -12,6 +13,7 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
     const [autocompleteEnd, setAutocompleteEnd] = useState(null);
     const [geocoder, setGeocoder] = useState(null);
     const [showCurrentLocation, setShowCurrentLocation] = useState(false);
+    const [showQR, setShowQR] = useState(false);
 
     const onLoadStart = (autoC) => setAutocompleteStart(autoC);
     const onLoadEnd = (autoC) => setAutocompleteEnd(autoC);
@@ -20,7 +22,7 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
         if (window.google && !geocoder) {
             setGeocoder(new window.google.maps.Geocoder());
         }
-    }, []);
+    }, [geocoder]);
 
     const onPlaceChangedStart = () => {
         if (autocompleteStart) {
@@ -51,11 +53,10 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
 
                 geocoder.geocode({ location: latlng }, (results, status) => {
                     if (status === "OK" && results[0]) {
-                        console.log(results[0].formatted_address);
                         setStartPoint(results[0].formatted_address);
                         setShowCurrentLocation(false);
                     } else {
-                        alert("Impossible de récupérer l'adresse à partir de la position.");
+                        alert("Impossible de récupérer l'adresse.");
                     }
                 });
             },
@@ -95,7 +96,22 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
                     </Autocomplete>
 
                     {showCurrentLocation && (
-                        <div onClick={handleUseCurrentLocation}style={{position: 'absolute',top: '100%',left: 0,right: 0,zIndex: 1000,backgroundColor: '#fff',border: '1px solid #ced4da',borderTop: 'none',padding: '8px',cursor: 'pointer',display: 'flex',alignItems: 'center',gap: '8px',fontSize: '0.9rem'}}>
+                        <div onClick={handleUseCurrentLocation} style={{
+                            position: 'absolute',
+                            top: '100%',
+                            left: 0,
+                            right: 0,
+                            zIndex: 1000,
+                            backgroundColor: '#fff',
+                            border: '1px solid #ced4da',
+                            borderTop: 'none',
+                            padding: '8px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            fontSize: '0.9rem'
+                        }}>
                             <MapPin size={16} />
                             Utiliser ma position actuelle
                         </div>
@@ -162,6 +178,28 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
                             </div>
                         );
                     })}
+
+                    {destination && (
+                        <div className="mt-3 text-center">
+                            <div onClick={() => setShowQR(!showQR)} style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                                <QrCode size={24} />
+                                <span>Générer QR Code</span>
+                            </div>
+
+                            {showQR && (
+                                <div className="mt-3">
+                                    <QRCode
+                                        value={`myapp://navigate?destination=${encodeURIComponent(destination)}`}
+                                        size={180}
+                                        bgColor="#ffffff"
+                                        fgColor="#000000"
+                                        level="H"
+                                    />
+                                    <p className="small mt-2 text-muted">Scannez avec l'application mobile</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
         </div>
