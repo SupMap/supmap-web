@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Button, Container } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -23,6 +23,19 @@ export default function UserConnexionButton({ setIsModalOpen }) {
         localStorage.removeItem("token");
         setIsAuthenticated(false);
     }
+
+       // Mettre à jour l'état si le token change
+       useEffect(() => {
+        function updateAuthState() {
+            setIsAuthenticated(!!localStorage.getItem("token"));
+        };
+
+        window.addEventListener("storage", updateAuthState);
+
+        return () => {
+            window.removeEventListener("storage", updateAuthState);
+        };
+    }, []);
 
     return (
         <Container fluid className="position-fixed top-0 end-0 p-2 d-flex flex-row justify-content-end gap-2" style={{ zIndex: 2000 }}>

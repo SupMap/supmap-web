@@ -11,7 +11,7 @@ export default function Register({ toggleLoginModal }) {
     const [secondName, setSecondName] = useState('');
     const [error, setError] = useState('');
 
-    const handleRegister = async (event) => {
+    async function handleRegister(event) {
         event.preventDefault();
 
         try {

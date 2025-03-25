@@ -15,8 +15,13 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
     const [showCurrentLocation, setShowCurrentLocation] = useState(false);
     const [showQR, setShowQR] = useState(false);
 
-    const onLoadStart = (autoC) => setAutocompleteStart(autoC);
-    const onLoadEnd = (autoC) => setAutocompleteEnd(autoC);
+    function onLoadStart(autoC) {
+        setAutocompleteStart(autoC);
+    }
+    
+    function onLoadEnd(autoC) {
+        setAutocompleteEnd(autoC);
+    }
 
     useEffect(() => {
         if (window.google && !geocoder) {
@@ -24,21 +29,21 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
         }
     }, [geocoder]);
 
-    const onPlaceChangedStart = () => {
+    function onPlaceChangedStart() {
         if (autocompleteStart) {
             const place = autocompleteStart.getPlace();
             setStartPoint(place.formatted_address || place.name);
         }
     };
 
-    const onPlaceChangedEnd = () => {
+    function onPlaceChangedEnd() {
         if (autocompleteEnd) {
             const place = autocompleteEnd.getPlace();
             setDestination(place.formatted_address || place.name);
         }
     };
 
-    const handleUseCurrentLocation = () => {
+    function handleUseCurrentLocation() {
         if (!navigator.geolocation || !geocoder) {
             alert("La géolocalisation est désactivée ou non supportée.");
             return;
@@ -66,7 +71,7 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
         );
     };
 
-    const handleStartClick = () => {
+    function handleStartClick() {
         const startClean = startPoint.replace(/,/g, '');
         const destClean = destination.replace(/,/g, '');
         onStartNavigation(startClean, destClean, travelMode);

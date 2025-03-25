@@ -15,9 +15,8 @@ export default function Map({ graphhopperResponse, incidents }) {
     const [routePath, setRoutePath] = useState([]);
     const mapRef = useRef(null);
     const initialZoom = 14;
-    const [mapZoom, setMapZoom] = useState(initialZoom);
 
-    const onLoad = (map) => {
+    function onLoad(map) {
         mapRef.current = map;
     };
 
@@ -46,7 +45,9 @@ export default function Map({ graphhopperResponse, incidents }) {
         if (graphhopperResponse) {
             try {
                 const encodedPolyline = graphhopperResponse.paths[0].points;
+                console.log("Polyline brute :", encodedPolyline);
                 const decoded = polyline.decode(encodedPolyline);
+                console.log("Polyline décodée :", decoded);
                 const path = decoded.map(([lat, lng]) => ({ lat, lng }));
                 setRoutePath(path);
             } catch (err) {
@@ -70,7 +71,7 @@ export default function Map({ graphhopperResponse, incidents }) {
         <GoogleMap
             mapContainerStyle={containerStyle}
             center={center}
-            zoom={mapZoom}
+            zoom={initialZoom}
             onLoad={onLoad}
             options={{
                 disableDefaultUI: true 
