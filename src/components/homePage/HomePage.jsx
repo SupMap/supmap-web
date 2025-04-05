@@ -1,4 +1,3 @@
-// HomePage.jsx
 import UserConnexionButton from "../userConnexionButton/UserConnexionButton";
 import Map from "../map/map";
 import RoutePlanner from "../routePlanner/RoutePlanner";
@@ -6,7 +5,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { useJsApiLoader } from "@react-google-maps/api";
 
-const libraries = ['places']; 
+const libraries = ['places'];
 
 export default function HomePage() {
     const [graphhopperData, setGraphhopperData] = useState(null);
@@ -82,7 +81,15 @@ export default function HomePage() {
 
     if (!isLoaded) {
         return (
-            <div style={{width: '100vw',height: '100vh',display: 'flex',flexDirection: 'column',justifyContent: 'center',alignItems: 'center',textAlign: 'center'}}>
+            <div style={{
+                width: '100vw',
+                height: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                textAlign: 'center'
+            }}>
                 <p style={{ fontSize: '1.8rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
                     Chargement de la carte en cours...
                 </p>
@@ -102,7 +109,11 @@ export default function HomePage() {
                 />
             )}
             <div className="map">
-                <Map graphhopperResponse={graphhopperData} incidents={incidents} />
+                <Map
+                    key={JSON.stringify(graphhopperData?.paths?.[0]?.points || "")} 
+                    graphhopperResponse={graphhopperData}
+                    incidents={incidents}
+                />
             </div>
         </div>
     );
