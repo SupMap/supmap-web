@@ -39,14 +39,26 @@ export default function HomePage() {
                     economical: typeof economicalRaw === 'string' ? JSON.parse(economicalRaw) : economicalRaw
                 };
 
-                const newRoutes = [
+                const routesList = [
                     { label: "Meilleur itin.", data: parsed.fastest },
                     { label: "Sans péage", data: parsed.noToll },
                     { label: "Économique", data: parsed.economical }
                 ];
-                console.log("Itinéraires reçus :", newRoutes);
-                setRoutes(newRoutes);
-                setGraphhopperData(parsed.fastest);
+
+                const uniqueRoutes = [];
+                const seen = new Set();
+
+                for (const route of routesList) {
+                    const encoded = route.data?.paths?.[0]?.points;
+                    if (encoded && !seen.has(encoded)) {
+                        seen.add(encoded);
+                        uniqueRoutes.push(route);
+                    }
+                }
+
+                console.log("Itinéraires filtrés :", uniqueRoutes);
+                setRoutes(uniqueRoutes);
+                setGraphhopperData(uniqueRoutes[0]?.data || null);
             } else if (response.data?.paths) {
                 const route = { label: "Meilleur itin.", data: response.data };
                 setRoutes([route]);

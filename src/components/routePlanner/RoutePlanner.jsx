@@ -71,10 +71,8 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
         );
     };
 
-    function handleStartClick() {
-        const startClean = startPoint.replace(/,/g, '');
-        const destClean = destination.replace(/,/g, '');
-        onStartNavigation(startClean, destClean, travelMode);
+    const handleStartClick = () => {
+        onStartNavigation(startPoint, destination, travelMode);
     };
 
     return (
