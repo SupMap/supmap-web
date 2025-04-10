@@ -45,9 +45,7 @@ export default function Map({ graphhopperResponse, incidents }) {
         if (graphhopperResponse) {
             try {
                 const encodedPolyline = graphhopperResponse.paths[0].points;
-                console.log("Polyline brute :", encodedPolyline);
                 const decoded = polyline.decode(encodedPolyline);
-                console.log("Polyline décodée :", decoded);
                 const path = decoded.map(([lat, lng]) => ({ lat, lng }));
                 setRoutePath(path);
             } catch (err) {

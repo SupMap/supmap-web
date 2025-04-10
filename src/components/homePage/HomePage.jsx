@@ -19,14 +19,22 @@ export default function HomePage() {
         libraries
     });
 
-    async function handleNavigationStart(start, destination, travelMode) {
-        try {
-            const token = localStorage.getItem("token");
-            const response = await axios.get(`http://localhost:8080/api/directions?origin=${start}&destination=${destination}&mode=${travelMode}`, {
-                headers: { Authorization: `${token}` }
-            });
+    function returnNavigationParams(start, destination) {
+        let startParam, destinationParam;
+        if ((start.lat !== undefined && start.lng !== undefined) && (destination.lat !== undefined && destination.lng !== undefined)) {
+            startParam = `${start.lat},${start.lng}`;
+            destinationParam = `${destination.lat},${destination.lng}`;
+        } else {
+            startParam = start;
+            destinationParam = destination;
+        }
+        return { startParam, destinationParam };
+    }
 
-            console.log("Réponse brute de l'API :", response.data);
+    async function handleNavigationStart(start, destination, travelMode) {
+        const { startParam, destinationParam } = returnNavigationParams(start, destination);
+        try {
+            const response = await axios.get(`http://localhost:8080/api/directions?origin=${encodeURIComponent(startParam)}&destination=${encodeURIComponent(destinationParam)}&mode=${encodeURIComponent(travelMode)}`);
 
             const fastestRaw = response.data.fastest;
             const noTollRaw = response.data.noToll;
@@ -46,17 +54,16 @@ export default function HomePage() {
                 ];
 
                 const uniqueRoutes = [];
-                const seen = new Set();
+                const setOfRoutes = new Set();
 
                 for (const route of routesList) {
                     const encoded = route.data?.paths?.[0]?.points;
-                    if (encoded && !seen.has(encoded)) {
-                        seen.add(encoded);
+                    if (encoded && !setOfRoutes.has(encoded)) {
+                        setOfRoutes.add(encoded);
                         uniqueRoutes.push(route);
                     }
                 }
 
-                console.log("Itinéraires filtrés :", uniqueRoutes);
                 setRoutes(uniqueRoutes);
                 setGraphhopperData(uniqueRoutes[0]?.data || null);
             } else if (response.data?.paths) {
@@ -122,7 +129,7 @@ export default function HomePage() {
             )}
             <div className="map">
                 <Map
-                    key={JSON.stringify(graphhopperData?.paths?.[0]?.points || "")} 
+                    key={JSON.stringify(graphhopperData?.paths?.[0]?.points || "")}
                     graphhopperResponse={graphhopperData}
                     incidents={incidents}
                 />

@@ -7,7 +7,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function RoutePlanner({ onStartNavigation, routes = [], setGraphhopperData }) {
     const [startPoint, setStartPoint] = useState('');
+    const [startCoordinates, setStartCoordinates] = useState(null); // Coordonnées du point de départ
     const [destination, setDestination] = useState('');
+    const [destinationCoordinates, setDestinationCoordinates] = useState(null); // Coordonnées de la destination
     const [travelMode, setTravelMode] = useState('car');
     const [autocompleteStart, setAutocompleteStart] = useState(null);
     const [autocompleteEnd, setAutocompleteEnd] = useState(null);
@@ -18,7 +20,7 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
     function onLoadStart(autoC) {
         setAutocompleteStart(autoC);
     }
-    
+
     function onLoadEnd(autoC) {
         setAutocompleteEnd(autoC);
     }
@@ -33,15 +35,27 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
         if (autocompleteStart) {
             const place = autocompleteStart.getPlace();
             setStartPoint(place.formatted_address || place.name);
+            if (place.geometry) {
+                setStartCoordinates({
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng(),
+                });
+            }
         }
-    };
+    }
 
     function onPlaceChangedEnd() {
         if (autocompleteEnd) {
             const place = autocompleteEnd.getPlace();
             setDestination(place.formatted_address || place.name);
+            if (place.geometry) {
+                setDestinationCoordinates({
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng(),
+                });
+            }
         }
-    };
+    }
 
     function handleUseCurrentLocation() {
         if (!navigator.geolocation || !geocoder) {
@@ -59,6 +73,7 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
                 geocoder.geocode({ location: latlng }, (results, status) => {
                     if (status === "OK" && results[0]) {
                         setStartPoint(results[0].formatted_address);
+                        setStartCoordinates(latlng); // Mettre à jour les coordonnées
                         setShowCurrentLocation(false);
                     } else {
                         alert("Impossible de récupérer l'adresse.");
@@ -69,10 +84,18 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
                 alert("Impossible de récupérer votre position.");
             }
         );
-    };
+    }
 
     const handleStartClick = () => {
-        onStartNavigation(startPoint, destination, travelMode);
+        if (startCoordinates && destinationCoordinates) {
+            onStartNavigation(startCoordinates, destinationCoordinates, travelMode);
+        } else if (startPoint && destination) {
+            onStartNavigation(startPoint, destination, travelMode);    
+        } 
+        else {
+            alert("Veuillez entrer un point de départ et une destination valides.");
+            return;
+        }
     };
 
     return (
@@ -160,6 +183,9 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
                     {routes.map((route, index) => {
                         const path = route.data.paths[0];
                         const timeMin = Math.round(path.time / 60000);
+                        const hours = Math.floor(timeMin / 60);
+                        const minutes = timeMin % 60;
+                        const travelTime = hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
                         const distanceKm = (path.distance / 1000).toFixed(1);
                         const arrivalTime = new Date(Date.now() + path.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -172,7 +198,7 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
                             >
                                 <div className="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <strong>{timeMin} min</strong> <span className="text-muted">Arrivée à {arrivalTime}</span>
+                                        <strong>{travelTime}</strong> <span className="text-muted">Arrivée à {arrivalTime}</span>
                                     </div>
                                     <span className="badge bg-primary">{route.label}</span>
                                 </div>
