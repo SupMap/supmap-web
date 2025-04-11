@@ -40,7 +40,6 @@ export default function Map({routes = [], incidents, selectedRouteIndex = 0}) {
         }
     }, []);
 
-    // ⚠️ Nettoyer les anciennes polylines avant d’en créer de nouvelles
     useEffect(() => {
         routePolylinesRef.current.forEach(poly => poly.setMap(null));
         routePolylinesRef.current = [];
