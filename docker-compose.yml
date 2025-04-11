@@ -43,7 +43,8 @@ services:
       POSTGRES_PASSWORD: supmap
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./db-init/init.sql:/docker-entrypoint-initdb.d/init.sql 
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+ 
     networks:
       - supmap-network
 
