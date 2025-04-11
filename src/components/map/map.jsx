@@ -1,5 +1,5 @@
-import { GoogleMap, Marker, Polyline } from '@react-google-maps/api';
-import { useEffect, useState, useRef } from 'react';
+import {GoogleMap, Marker} from '@react-google-maps/api';
+import {useEffect, useRef, useState} from 'react';
 import polyline from '@mapbox/polyline';
 
 const containerStyle = {
@@ -7,28 +7,28 @@ const containerStyle = {
     height: '100vh'
 };
 
-const defaultCenter = { lat: 47.383333, lng: 0.683333 };
+const defaultCenter = {lat: 47.383333, lng: 0.683333};
 
-export default function Map({ graphhopperResponse, incidents }) {
+export default function Map({routes = [], incidents, selectedRouteIndex = 0}) {
     const [center, setCenter] = useState(defaultCenter);
     const [userLocation, setUserLocation] = useState(null);
-    const [routePath, setRoutePath] = useState([]);
     const mapRef = useRef(null);
+    const routePolylinesRef = useRef([]);
     const initialZoom = 14;
 
     function onLoad(map) {
         mapRef.current = map;
-    };
+    }
 
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    const userPos = { lat: position.coords.latitude, lng: position.coords.longitude };
-                    setCenter(userPos);
-                    setUserLocation(userPos);
+                    const pos = {lat: position.coords.latitude, lng: position.coords.longitude};
+                    setCenter(pos);
+                    setUserLocation(pos);
                     if (mapRef.current) {
-                        mapRef.current.setCenter(userPos);
+                        mapRef.current.setCenter(pos);
                         mapRef.current.setZoom(initialZoom);
                     }
                 },
@@ -40,30 +40,42 @@ export default function Map({ graphhopperResponse, incidents }) {
         }
     }, []);
 
+    // ⚠️ Nettoyer les anciennes polylines avant d’en créer de nouvelles
     useEffect(() => {
-        setRoutePath([]);
-        if (graphhopperResponse) {
-            try {
-                const encodedPolyline = graphhopperResponse.paths[0].points;
-                const decoded = polyline.decode(encodedPolyline);
-                const path = decoded.map(([lat, lng]) => ({ lat, lng }));
-                setRoutePath(path);
-            } catch (err) {
-                console.error("Erreur lors du décodage de la polyline:", err);
-            }
-        }
-    }, [graphhopperResponse]);
+        routePolylinesRef.current.forEach(poly => poly.setMap(null));
+        routePolylinesRef.current = [];
 
-    useEffect(() => {
-        if (routePath.length > 0 && mapRef.current) {
-            const bounds = new window.google.maps.LatLngBounds();
-            routePath.forEach(point => bounds.extend(new window.google.maps.LatLng(point.lat, point.lng)));
-            mapRef.current.fitBounds(bounds);
-        } else if (routePath.length === 0 && mapRef.current && userLocation) {
-            mapRef.current.setCenter(userLocation);
-            mapRef.current.setZoom(initialZoom);
-        }
-    }, [routePath, userLocation]);
+        if (!mapRef.current || routes.length === 0) return;
+
+        routes.forEach((route, index) => {
+            try {
+                const decoded = polyline.decode(route.data.paths[0].points);
+                const path = decoded.map(([lat, lng]) => ({lat, lng}));
+
+                const poly = new window.google.maps.Polyline({
+                    path,
+                    map: mapRef.current,
+                    strokeColor: '#3d2683',
+                    strokeOpacity: index === selectedRouteIndex ? 1.0 : 0.2,
+                    strokeWeight: index === selectedRouteIndex ? 5 : 4,
+                    zIndex: index === selectedRouteIndex ? 2 : 1,
+                });
+
+                routePolylinesRef.current.push(poly);
+
+                // Zoom automatique sur l'itinéraire principal
+                if (index === selectedRouteIndex) {
+                    const bounds = new window.google.maps.LatLngBounds();
+                    path.forEach(point => bounds.extend(point));
+                    mapRef.current.fitBounds(bounds);
+                }
+
+            } catch (err) {
+                console.error("Erreur lors du décodage de la route :", err);
+            }
+        });
+
+    }, [routes, selectedRouteIndex]);
 
     return (
         <GoogleMap
@@ -71,63 +83,45 @@ export default function Map({ graphhopperResponse, incidents }) {
             center={center}
             zoom={initialZoom}
             onLoad={onLoad}
-            options={{
-                disableDefaultUI: true 
-              }}
+            options={{disableDefaultUI: true}}
         >
-            
             {userLocation && (
-                <Marker position={userLocation} title="Votre position" />
+                <Marker position={userLocation} title="Votre position"/>
             )}
 
-            
-            {routePath.length > 0 && (
-                <Polyline
-                    path={routePath}
-                    options={{ strokeColor: '#3d2683', strokeWeight: 4 }}
-                />
-            )}
+            {routes[selectedRouteIndex] && (() => {
+                const decoded = polyline.decode(routes[selectedRouteIndex].data.paths[0].points);
+                const points = decoded.map(([lat, lng]) => ({lat, lng}));
+                return (
+                    <>
+                        <Marker
+                            position={points[0]}
+                            title="Point de départ"
+                            icon={{
+                                url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"><text x="0" y="20">📍</text></svg>`),
+                                scaledSize: new window.google.maps.Size(30, 30)
+                            }}
+                        />
+                        <Marker
+                            position={points[points.length - 1]}
+                            title="Destination"
+                            icon={{
+                                url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"><text x="0" y="20">🏁</text></svg>`),
+                                scaledSize: new window.google.maps.Size(30, 30)
+                            }}
+                        />
+                    </>
+                );
+            })()}
 
-            
-            {routePath.length > 0 && (
-                <Marker
-                    position={routePath[0]}
-                    title="Point de départ"
-                    icon={{
-                        url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
-                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30">
-                                <text x="0" y="20">📍</text>
-                            </svg>`),
-                        scaledSize: new window.google.maps.Size(30, 30)
-                    }}
-                />
-            )}
-
-            
-            {routePath.length > 0 && (
-                <Marker
-                    position={routePath[routePath.length - 1]}
-                    title="Destination"
-                    icon={{
-                        url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
-                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30">
-                                <text x="0" y="20">🏁</text>
-                            </svg>`),
-                        scaledSize: new window.google.maps.Size(30, 30)
-                    }}
-                />
-            )}
-
-            
-            {incidents && incidents.map((incident, index) => {
-                const position = { lat: incident.latitude, lng: incident.longitude };
-                const iconUrl = incident.typeId === 1 ? '/accident.svg' : '/incident.svg';
+            {incidents && incidents.map((incident, idx) => {
+                const position = {lat: incident.latitude, lng: incident.longitude};
                 return (
                     <Marker
-                        key={index}
+                        key={idx}
                         position={position}
                         title={`Incident (type ${incident.typeId})`}
-                        icon={{ url: iconUrl, scaledSize: new window.google.maps.Size(30, 30) }}
+                        icon={{url: '/accident.svg', scaledSize: new window.google.maps.Size(30, 30)}}
                     />
                 );
             })}

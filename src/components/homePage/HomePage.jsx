@@ -2,8 +2,8 @@ import UserConnexionButton from "../userConnexionButton/UserConnexionButton";
 import Map from "../map/map";
 import RoutePlanner from "../routePlanner/RoutePlanner";
 import axios from "axios";
-import { useState, useEffect } from "react";
-import { useJsApiLoader } from "@react-google-maps/api";
+import {useEffect, useState} from "react";
+import {useJsApiLoader} from "@react-google-maps/api";
 
 const libraries = ['places'];
 
@@ -12,9 +12,10 @@ export default function HomePage() {
     const [routes, setRoutes] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [incidents, setIncidents] = useState([]);
+    const [selectedRouteIndex, setSelectedRouteIndex] = useState(0);
     const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-    const { isLoaded } = useJsApiLoader({
+    const {isLoaded} = useJsApiLoader({
         googleMapsApiKey,
         libraries
     });
@@ -28,14 +29,17 @@ export default function HomePage() {
             startParam = start;
             destinationParam = destination;
         }
-        return { startParam, destinationParam };
+        return {startParam, destinationParam};
     }
 
     async function handleNavigationStart(start, destination, travelMode) {
-        const { startParam, destinationParam } = returnNavigationParams(start, destination);
+        setRoutes([]);
+        setGraphhopperData(null);
+        setSelectedRouteIndex(0);
+
+        const {startParam, destinationParam} = returnNavigationParams(start, destination);
         try {
             const response = await axios.get(`http://localhost:8080/api/directions?origin=${encodeURIComponent(startParam)}&destination=${encodeURIComponent(destinationParam)}&mode=${encodeURIComponent(travelMode)}`);
-
             const fastestRaw = response.data.fastest;
             const noTollRaw = response.data.noToll;
             const economicalRaw = response.data.economical;
@@ -48,9 +52,9 @@ export default function HomePage() {
                 };
 
                 const routesList = [
-                    { label: "Meilleur itin.", data: parsed.fastest },
-                    { label: "Sans péage", data: parsed.noToll },
-                    { label: "Économique", data: parsed.economical }
+                    {label: "Meilleur itin.", data: parsed.fastest},
+                    {label: "Sans péage", data: parsed.noToll},
+                    {label: "Économique", data: parsed.economical}
                 ];
 
                 const uniqueRoutes = [];
@@ -67,7 +71,7 @@ export default function HomePage() {
                 setRoutes(uniqueRoutes);
                 setGraphhopperData(uniqueRoutes[0]?.data || null);
             } else if (response.data?.paths) {
-                const route = { label: "Meilleur itin.", data: response.data };
+                const route = {label: "Meilleur itin.", data: response.data};
                 setRoutes([route]);
                 setGraphhopperData(response.data);
             } else {
@@ -82,7 +86,7 @@ export default function HomePage() {
         try {
             const token = localStorage.getItem("token");
             const response = await axios.get("http://localhost:8080/api/incidents", {
-                headers: { Authorization: `${token}` }
+                headers: {Authorization: `${token}`}
             });
             if (response.data) setIncidents(response.data);
         } catch (error) {
@@ -93,10 +97,6 @@ export default function HomePage() {
     useEffect(() => {
         fetchIncidents();
     }, []);
-
-    useEffect(() => {
-        console.log("Itinéraires à afficher :", routes);
-    }, [routes]);
 
     if (!isLoaded) {
         return (
@@ -109,29 +109,30 @@ export default function HomePage() {
                 alignItems: 'center',
                 textAlign: 'center'
             }}>
-                <p style={{ fontSize: '1.8rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
+                <p style={{fontSize: '1.8rem', fontWeight: 'bold', marginBottom: '1.5rem'}}>
                     Chargement de la carte en cours...
                 </p>
-                <img src="/MAP2-300.png" alt="Chargement..." style={{ maxWidth: "300px" }} />
+                <img src="/MAP2-300.png" alt="Chargement..." style={{maxWidth: "300px"}}/>
             </div>
         );
     }
 
     return (
         <div>
-            <UserConnexionButton setIsModalOpen={setIsModalOpen} />
+            <UserConnexionButton setIsModalOpen={setIsModalOpen}/>
             {!isModalOpen && (
                 <RoutePlanner
                     onStartNavigation={handleNavigationStart}
                     routes={routes}
                     setGraphhopperData={setGraphhopperData}
+                    setSelectedRouteIndex={setSelectedRouteIndex}
                 />
             )}
             <div className="map">
                 <Map
-                    key={JSON.stringify(graphhopperData?.paths?.[0]?.points || "")}
-                    graphhopperResponse={graphhopperData}
+                    routes={routes}
                     incidents={incidents}
+                    selectedRouteIndex={selectedRouteIndex}
                 />
             </div>
         </div>

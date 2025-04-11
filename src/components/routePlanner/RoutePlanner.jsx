@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Button, InputGroup } from 'react-bootstrap';
-import { Car, Bike, Footprints, MapPin, Flag, QrCode } from "lucide-react";
-import { Autocomplete } from '@react-google-maps/api';
+import React, {useEffect, useState} from 'react';
+import {Button, Form, InputGroup} from 'react-bootstrap';
+import {Bike, Car, Flag, Footprints, MapPin, QrCode} from "lucide-react";
+import {Autocomplete} from '@react-google-maps/api';
 import QRCode from 'react-qr-code';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-export default function RoutePlanner({ onStartNavigation, routes = [], setGraphhopperData }) {
+export default function RoutePlanner({onStartNavigation, routes = [], setGraphhopperData, setSelectedRouteIndex}) {
     const [startPoint, setStartPoint] = useState('');
-    const [startCoordinates, setStartCoordinates] = useState(null); // Coordonnées du point de départ
+    const [startCoordinates, setStartCoordinates] = useState(null);
     const [destination, setDestination] = useState('');
-    const [destinationCoordinates, setDestinationCoordinates] = useState(null); // Coordonnées de la destination
+    const [destinationCoordinates, setDestinationCoordinates] = useState(null);
     const [travelMode, setTravelMode] = useState('car');
     const [autocompleteStart, setAutocompleteStart] = useState(null);
     const [autocompleteEnd, setAutocompleteEnd] = useState(null);
@@ -70,10 +70,10 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
                     lng: position.coords.longitude
                 };
 
-                geocoder.geocode({ location: latlng }, (results, status) => {
+                geocoder.geocode({location: latlng}, (results, status) => {
                     if (status === "OK" && results[0]) {
                         setStartPoint(results[0].formatted_address);
-                        setStartCoordinates(latlng); // Mettre à jour les coordonnées
+                        setStartCoordinates(latlng);
                         setShowCurrentLocation(false);
                     } else {
                         alert("Impossible de récupérer l'adresse.");
@@ -90,26 +90,25 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
         if (startCoordinates && destinationCoordinates) {
             onStartNavigation(startCoordinates, destinationCoordinates, travelMode);
         } else if (startPoint && destination) {
-            onStartNavigation(startPoint, destination, travelMode);    
-        } 
-        else {
+            onStartNavigation(startPoint, destination, travelMode);
+        } else {
             alert("Veuillez entrer un point de départ et une destination valides.");
-            return;
+
         }
     };
 
     return (
-        <div className="position-absolute start-0 ms-3 p-3 shadow-lg bg-white bg-opacity-75" style={{ top: '20px', width: '360px', zIndex: 2000 }}>
+        <div className="position-absolute start-0 ms-3 p-3 shadow-lg bg-white bg-opacity-75"
+             style={{top: '20px', width: '360px', zIndex: 2000}}>
             <Form>
-
-                <Form.Group className="mb-3" style={{ position: 'relative' }}>
+                <Form.Group className="mb-3" style={{position: 'relative'}}>
                     <Autocomplete
                         onLoad={onLoadStart}
                         onPlaceChanged={onPlaceChangedStart}
-                        options={{ componentRestrictions: { country: 'fr' } }}
+                        options={{componentRestrictions: {country: 'fr'}}}
                     >
                         <InputGroup>
-                            <InputGroup.Text><MapPin size={18} /></InputGroup.Text>
+                            <InputGroup.Text><MapPin size={18}/></InputGroup.Text>
                             <Form.Control
                                 type="text"
                                 placeholder="Point de départ"
@@ -138,7 +137,7 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
                             gap: '8px',
                             fontSize: '0.9rem'
                         }}>
-                            <MapPin size={16} />
+                            <MapPin size={16}/>
                             Utiliser ma position actuelle
                         </div>
                     )}
@@ -148,10 +147,10 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
                     <Autocomplete
                         onLoad={onLoadEnd}
                         onPlaceChanged={onPlaceChangedEnd}
-                        options={{ componentRestrictions: { country: 'fr' } }}
+                        options={{componentRestrictions: {country: 'fr'}}}
                     >
                         <InputGroup>
-                            <InputGroup.Text><Flag size={18} /></InputGroup.Text>
+                            <InputGroup.Text><Flag size={18}/></InputGroup.Text>
                             <Form.Control
                                 type="text"
                                 placeholder="Destination"
@@ -163,14 +162,17 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
                 </Form.Group>
 
                 <div className="d-flex justify-content-between mb-3">
-                    <Button className={travelMode === 'car' ? 'primaryButton' : 'btn-light'} onClick={() => setTravelMode('car')}>
-                        <Car size={25} />
+                    <Button className={travelMode === 'car' ? 'primaryButton' : 'btn-light'}
+                            onClick={() => setTravelMode('car')}>
+                        <Car size={25}/>
                     </Button>
-                    <Button className={travelMode === 'bike' ? 'primaryButton' : 'btn-light'} onClick={() => setTravelMode('bike')}>
-                        <Bike size={25} />
+                    <Button className={travelMode === 'bike' ? 'primaryButton' : 'btn-light'}
+                            onClick={() => setTravelMode('bike')}>
+                        <Bike size={25}/>
                     </Button>
-                    <Button className={travelMode === 'foot' ? 'primaryButton' : 'btn-light'} onClick={() => setTravelMode('foot')}>
-                        <Footprints size={25} />
+                    <Button className={travelMode === 'foot' ? 'primaryButton' : 'btn-light'}
+                            onClick={() => setTravelMode('foot')}>
+                        <Footprints size={25}/>
                     </Button>
                 </div>
 
@@ -187,22 +189,32 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
                         const minutes = timeMin % 60;
                         const travelTime = hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
                         const distanceKm = (path.distance / 1000).toFixed(1);
-                        const arrivalTime = new Date(Date.now() + path.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        const arrivalTime = new Date(Date.now() + path.time).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
 
                         return (
                             <div
                                 key={index}
                                 className="border rounded p-2 mb-2 bg-light"
-                                style={{ cursor: 'pointer' }}
-                                onClick={() => setGraphhopperData(route.data)}
+                                style={{cursor: 'pointer'}}
+                                onClick={() => {
+                                    setGraphhopperData(route.data);
+                                    if (setSelectedRouteIndex) {
+                                        setSelectedRouteIndex(index);
+                                    }
+                                }}
                             >
                                 <div className="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <strong>{travelTime}</strong> <span className="text-muted">Arrivée à {arrivalTime}</span>
+                                        <strong>{travelTime}</strong> <span
+                                        className="text-muted">Arrivée à {arrivalTime}</span>
                                     </div>
                                     <span className="badge bg-primary">{route.label}</span>
                                 </div>
-                                <small className="text-muted">{path.description || path.instructions?.[0]?.text || ""}</small><br />
+                                <small
+                                    className="text-muted">{path.description || path.instructions?.[0]?.text || ""}</small><br/>
                                 <small className="text-muted">{distanceKm} km</small>
                             </div>
                         );
@@ -210,11 +222,11 @@ export default function RoutePlanner({ onStartNavigation, routes = [], setGraphh
 
                     {destination && (
                         <div className="mt-3 text-center">
-                            <div onClick={() => setShowQR(!showQR)} style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                                <QrCode size={24} />
+                            <div onClick={() => setShowQR(!showQR)}
+                                 style={{cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px'}}>
+                                <QrCode size={24}/>
                                 <span>Générer QR Code</span>
                             </div>
-
                             {showQR && (
                                 <div className="mt-3">
                                     <QRCode
