@@ -24,7 +24,6 @@ export default function UserConnexionButton({ setIsModalOpen }) {
         setIsAuthenticated(false);
     }
 
-       // Mettre à jour l'état si le token change
        useEffect(() => {
         function updateAuthState() {
             setIsAuthenticated(!!localStorage.getItem("token"));
@@ -41,7 +40,7 @@ export default function UserConnexionButton({ setIsModalOpen }) {
         <Container fluid className="position-fixed top-0 end-0 p-2 d-flex flex-row justify-content-end gap-2" style={{ zIndex: 2000 }}>
             {isAuthenticated ? (
                 <>
-                    <Button className="btn btn-primary fw-bold primaryButton" onClick={() => handleModal('userInfo', true)}>
+                    <Button className="btn fw-bold primaryButton" onClick={() => handleModal('userInfo', true)}>
                         Profil utilisateur
                     </Button>
                     <Button className="btn btn-danger fw-bold secondaryButton" onClick={handleLogout}>
