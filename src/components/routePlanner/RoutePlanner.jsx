@@ -1,11 +1,17 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Form, InputGroup} from 'react-bootstrap';
-import {Bike, Car, Flag, Footprints, MapPin, QrCode} from "lucide-react";
-import {Autocomplete} from '@react-google-maps/api';
+import React, { useEffect, useState } from 'react';
+import { Button, Form, InputGroup } from 'react-bootstrap';
+import { Bike, Car, Flag, Footprints, MapPin, QrCode } from "lucide-react";
+import { Autocomplete } from '@react-google-maps/api';
 import QRCode from 'react-qr-code';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-export default function RoutePlanner({onStartNavigation, routes = [], setGraphhopperData, setSelectedRouteIndex}) {
+export default function RoutePlanner({
+    onStartNavigation,
+    routes = [],
+    setGraphhopperData,
+    setSelectedRouteIndex,
+    selectedRouteIndex
+}) {
     const [startPoint, setStartPoint] = useState('');
     const [startCoordinates, setStartCoordinates] = useState(null);
     const [destination, setDestination] = useState('');
@@ -70,7 +76,7 @@ export default function RoutePlanner({onStartNavigation, routes = [], setGraphho
                     lng: position.coords.longitude
                 };
 
-                geocoder.geocode({location: latlng}, (results, status) => {
+                geocoder.geocode({ location: latlng }, (results, status) => {
                     if (status === "OK" && results[0]) {
                         setStartPoint(results[0].formatted_address);
                         setStartCoordinates(latlng);
@@ -93,22 +99,21 @@ export default function RoutePlanner({onStartNavigation, routes = [], setGraphho
             onStartNavigation(startPoint, destination, travelMode);
         } else {
             alert("Veuillez entrer un point de départ et une destination valides.");
-
         }
     };
 
     return (
         <div className="position-absolute start-0 ms-3 p-3 shadow-lg bg-white bg-opacity-75"
-             style={{top: '20px', width: '360px', zIndex: 2000}}>
+             style={{ top: '20px', width: '360px', zIndex: 2000 }}>
             <Form>
-                <Form.Group className="mb-3" style={{position: 'relative'}}>
+                <Form.Group className="mb-3" style={{ position: 'relative' }}>
                     <Autocomplete
                         onLoad={onLoadStart}
                         onPlaceChanged={onPlaceChangedStart}
-                        options={{componentRestrictions: {country: 'fr'}}}
+                        options={{ componentRestrictions: { country: 'fr' } }}
                     >
                         <InputGroup>
-                            <InputGroup.Text><MapPin size={18}/></InputGroup.Text>
+                            <InputGroup.Text><MapPin size={18} /></InputGroup.Text>
                             <Form.Control
                                 type="text"
                                 placeholder="Point de départ"
@@ -137,7 +142,7 @@ export default function RoutePlanner({onStartNavigation, routes = [], setGraphho
                             gap: '8px',
                             fontSize: '0.9rem'
                         }}>
-                            <MapPin size={16}/>
+                            <MapPin size={16} />
                             Utiliser ma position actuelle
                         </div>
                     )}
@@ -147,10 +152,10 @@ export default function RoutePlanner({onStartNavigation, routes = [], setGraphho
                     <Autocomplete
                         onLoad={onLoadEnd}
                         onPlaceChanged={onPlaceChangedEnd}
-                        options={{componentRestrictions: {country: 'fr'}}}
+                        options={{ componentRestrictions: { country: 'fr' } }}
                     >
                         <InputGroup>
-                            <InputGroup.Text><Flag size={18}/></InputGroup.Text>
+                            <InputGroup.Text><Flag size={18} /></InputGroup.Text>
                             <Form.Control
                                 type="text"
                                 placeholder="Destination"
@@ -162,17 +167,14 @@ export default function RoutePlanner({onStartNavigation, routes = [], setGraphho
                 </Form.Group>
 
                 <div className="d-flex justify-content-between mb-3">
-                    <Button className={travelMode === 'car' ? 'primaryButton' : 'btn-light'}
-                            onClick={() => setTravelMode('car')}>
-                        <Car size={25}/>
+                    <Button className={travelMode === 'car' ? 'primaryButton' : 'btn-light'} onClick={() => setTravelMode('car')}>
+                        <Car size={25} />
                     </Button>
-                    <Button className={travelMode === 'bike' ? 'primaryButton' : 'btn-light'}
-                            onClick={() => setTravelMode('bike')}>
-                        <Bike size={25}/>
+                    <Button className={travelMode === 'bike' ? 'primaryButton' : 'btn-light'} onClick={() => setTravelMode('bike')}>
+                        <Bike size={25} />
                     </Button>
-                    <Button className={travelMode === 'foot' ? 'primaryButton' : 'btn-light'}
-                            onClick={() => setTravelMode('foot')}>
-                        <Footprints size={25}/>
+                    <Button className={travelMode === 'foot' ? 'primaryButton' : 'btn-light'} onClick={() => setTravelMode('foot')}>
+                        <Footprints size={25} />
                     </Button>
                 </div>
 
@@ -194,27 +196,35 @@ export default function RoutePlanner({onStartNavigation, routes = [], setGraphho
                             minute: '2-digit'
                         });
 
+                    
+                        let icon = "🛣️";
+                        if (route.label === "Meilleur itin.") icon = "⭐️";
+                        else if (route.label === "Sans péage") icon = "🚫🧾";
+                        else if (route.label === "Économique") icon = "💰";
+
                         return (
                             <div
                                 key={index}
-                                className="border rounded p-2 mb-2 bg-light"
-                                style={{cursor: 'pointer'}}
+                                className={`route-item border rounded p-2 mb-2 ${selectedRouteIndex === index ? 'selected-route' : 'bg-light'}`}
                                 onClick={() => {
                                     setGraphhopperData(route.data);
-                                    if (setSelectedRouteIndex) {
-                                        setSelectedRouteIndex(index);
-                                    }
+                                    setSelectedRouteIndex(index);
                                 }}
+                                style={{ cursor: 'pointer', transition: 'all 0.3s ease-in-out' }}
                             >
                                 <div className="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <strong>{travelTime}</strong> <span
-                                        className="text-muted">Arrivée à {arrivalTime}</span>
+                                        <strong>{travelTime}</strong>{" "}
+                                        <span className="text-muted">Arrivée à {arrivalTime}</span>
                                     </div>
-                                    <span className="badge bg-primary">{route.label}</span>
+                                    <span
+                                        className="badge bg-light border text-dark fw-medium d-flex align-items-center gap-2"
+                                        style={{ borderRadius: '20px', fontSize: '0.9rem' }}
+                                    >
+                                        <span style={{ fontSize: '1.2rem' }}>{icon}</span> {route.label}
+                                    </span>
                                 </div>
-                                <small
-                                    className="text-muted">{path.description || path.instructions?.[0]?.text || ""}</small><br/>
+                                <small className="text-muted">{path.description || path.instructions?.[0]?.text || ""}</small><br />
                                 <small className="text-muted">{distanceKm} km</small>
                             </div>
                         );
@@ -223,8 +233,8 @@ export default function RoutePlanner({onStartNavigation, routes = [], setGraphho
                     {destination && (
                         <div className="mt-3 text-center">
                             <div onClick={() => setShowQR(!showQR)}
-                                 style={{cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px'}}>
-                                <QrCode size={24}/>
+                                 style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                                <QrCode size={24} />
                                 <span>Générer QR Code</span>
                             </div>
                             {showQR && (
