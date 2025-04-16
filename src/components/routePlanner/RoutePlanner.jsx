@@ -126,22 +126,7 @@ export default function RoutePlanner({
                     </Autocomplete>
 
                     {showCurrentLocation && (
-                        <div onClick={handleUseCurrentLocation} style={{
-                            position: 'absolute',
-                            top: '100%',
-                            left: 0,
-                            right: 0,
-                            zIndex: 1000,
-                            backgroundColor: '#fff',
-                            border: '1px solid #ced4da',
-                            borderTop: 'none',
-                            padding: '8px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            fontSize: '0.9rem'
-                        }}>
+                        <div onClick={handleUseCurrentLocation}className='dropdown-menu-position-actuelle'>
                             <MapPin size={16} />
                             Utiliser ma position actuelle
                         </div>
@@ -197,10 +182,10 @@ export default function RoutePlanner({
                         });
 
                     
-                        let icon = "🛣️";
-                        if (route.label === "Meilleur itin.") icon = "⭐️";
-                        else if (route.label === "Sans péage") icon = "🚫🧾";
-                        else if (route.label === "Économique") icon = "💰";
+                        let icon = "/path/to/road-icon.png"; 
+                        if (route.label === "Meilleur itin.") icon = "/best.png";
+                        else if (route.label === "Sans péage") icon = "/peage.png";
+                        else if (route.label === "Économique") icon = "/econo.png";
 
                         return (
                             <div
@@ -221,7 +206,8 @@ export default function RoutePlanner({
                                         className="badge bg-light border text-dark fw-medium d-flex align-items-center gap-2"
                                         style={{ borderRadius: '20px', fontSize: '0.9rem' }}
                                     >
-                                        <span style={{ fontSize: '1.2rem' }}>{icon}</span> {route.label}
+                                        <img src={icon} alt="Icon" style={{ width: '30px', height: '30px' }} />
+                                        {route.label}
                                     </span>
                                 </div>
                                 <small className="text-muted">{path.description || path.instructions?.[0]?.text || ""}</small><br />
