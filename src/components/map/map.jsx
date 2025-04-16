@@ -75,7 +75,14 @@ export default function Map({ routes = [], selectedRouteIndex = 0, incidents = [
                     mapRef.current.fitBounds(bounds);
                 }
 
-                const duration = Math.round(route.data.paths[0].time / 60000);
+                const totalMinutes = Math.round(route.data.paths[0].time / 60000);
+                const hours = Math.floor(totalMinutes / 60);
+                const minutes = totalMinutes % 60;
+
+                const duration =
+                    hours > 0
+                        ? `${hours}h ${minutes.toString().padStart(2, '0')}min`
+                        : `${minutes}min`;
                 const midPoint = path[Math.floor(path.length / 2)];
 
                 const marker = new window.google.maps.Marker({
@@ -89,7 +96,7 @@ export default function Map({ routes = [], selectedRouteIndex = 0, incidents = [
                                 </filter>
                                 <rect x="0" y="0" rx="10" ry="10" width="75" height="34" fill="${index === selectedRouteIndex ? '#3d2683' : '#ffffff'}" filter="url(#shadow)" />
                                 <text x="37.5" y="22" font-size="14" font-weight="bold" text-anchor="middle" fill="${index === selectedRouteIndex ? '#ffffff' : '#3d2683'}" font-family="Arial">
-                                    ${duration} min
+                                    ${duration}
                                 </text>
                             </svg>
                         `)}`,
@@ -126,8 +133,8 @@ export default function Map({ routes = [], selectedRouteIndex = 0, incidents = [
     }
 
     const showUserMarker = userLocation && routes.length === 0;
-    const userMarker = showUserMarker  ? (
-        <Marker 
+    const userMarker = showUserMarker ? (
+        <Marker
             position={userLocation}
             title="Votre position"
         />
@@ -204,9 +211,9 @@ export default function Map({ routes = [], selectedRouteIndex = 0, incidents = [
                 {markers}
                 {incidentMarkers}
             </GoogleMap>
-            
-            <button onClick={recenterOnRoute}className='button-refocus'title="Recentrer l'itinéraire">  
-                <img src="/target.svg"alt="Recentrer"/>
+
+            <button onClick={recenterOnRoute} className='button-refocus' title="Recentrer l'itinéraire">
+                <img src="/target.svg" alt="Recentrer" />
             </button>
         </div>
     );
