@@ -126,7 +126,7 @@ export default function RoutePlanner({
                     </Autocomplete>
 
                     {showCurrentLocation && (
-                        <div onClick={handleUseCurrentLocation}className='dropdown-menu-position-actuelle'>
+                        <div onClick={handleUseCurrentLocation}className='dropdown-menu-current-position'>
                             <MapPin size={16} />
                             Utiliser ma position actuelle
                         </div>

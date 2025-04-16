@@ -98,7 +98,6 @@ export default function HomePage() {
         fetchIncidents();
     }, []);
 
-    // 🔄 Synchronisation : clic sur bulle de durée
     useEffect(() => {
         const handleRouteSelection = (e) => {
             setSelectedRouteIndex(e.detail);
@@ -112,15 +111,7 @@ export default function HomePage() {
 
     if (!isLoaded) {
         return (
-            <div style={{
-                width: '100vw',
-                height: '100vh',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                textAlign: 'center'
-            }}>
+            <div style={{width: '100vw',height: '100vh',display: 'flex',flexDirection: 'column',justifyContent: 'center',alignItems: 'center',textAlign: 'center'}}>
                 <p style={{ fontSize: '1.8rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
                     Chargement de la carte en cours...
                 </p>

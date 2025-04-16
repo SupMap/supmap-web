@@ -111,8 +111,26 @@ export default function Map({ routes = [], selectedRouteIndex = 0, incidents = [
         });
     }, [routes, selectedRouteIndex]);
 
-    const userMarker = userLocation ? (
-        <Marker position={userLocation} title="Votre position" />
+    function recenterOnRoute() {
+        const route = routes[selectedRouteIndex];
+        if (!route || !mapRef.current) return;
+
+        try {
+            const pathDecoded = polyline.decode(route.data.paths[0].points);
+            const bounds = new window.google.maps.LatLngBounds();
+            pathDecoded.forEach(([lat, lng]) => bounds.extend({ lat, lng }));
+            mapRef.current.fitBounds(bounds);
+        } catch (err) {
+            console.error("Erreur lors du recentrage :", err);
+        }
+    }
+
+    const showUserMarker = userLocation && routes.length === 0;
+    const userMarker = showUserMarker  ? (
+        <Marker 
+            position={userLocation}
+            title="Votre position"
+        />
     ) : null;
 
     const markers = (() => {
@@ -121,15 +139,10 @@ export default function Map({ routes = [], selectedRouteIndex = 0, incidents = [
             .map(([lat, lng]) => ({ lat, lng }));
         return (
             <>
-                
                 <Marker
                     position={points[0]}
                     icon={{
-                        url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-                                <circle cx="20" cy="20" r="12" fill="#3d2683" stroke="white" stroke-width="4"/>
-                            </svg>
-                        `)}`,
+                        url: `circle-bleue.svg`,
                         scaledSize: new window.google.maps.Size(30, 30),
                         anchor: new window.google.maps.Point(20, 20)
                     }}
@@ -143,16 +156,10 @@ export default function Map({ routes = [], selectedRouteIndex = 0, incidents = [
                     }}
                     title="Point de départ"
                 />
-
-                
                 <Marker
                     position={points[points.length - 1]}
                     icon={{
-                        url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40">
-                                <circle cx="20" cy="20" r="12" fill="#F15B4E" stroke="white" stroke-width="4"/>
-                            </svg>
-                        `)}`,
+                        url: `/circle-orange.svg`,
                         scaledSize: new window.google.maps.Size(30, 30),
                         anchor: new window.google.maps.Point(20, 20)
                     }}
@@ -180,21 +187,27 @@ export default function Map({ routes = [], selectedRouteIndex = 0, incidents = [
     ));
 
     return (
-        <GoogleMap
-            mapContainerStyle={containerStyle}
-            center={center}
-            zoom={initialZoom}
-            onLoad={onLoad}
-            options={{
-                zoomControl: true,
-                streetViewControl: false,
-                mapTypeControl: false,
-                fullscreenControl: false
-            }}
-        >
-            {userMarker}
-            {markers}
-            {incidentMarkers}
-        </GoogleMap>
+        <div style={{ position: 'relative' }}>
+            <GoogleMap
+                mapContainerStyle={containerStyle}
+                center={center}
+                zoom={initialZoom}
+                onLoad={onLoad}
+                options={{
+                    disableDefaultUI: true,
+                    zoomControl: true,
+                    streetViewControl: false,
+                    fullscreenControl: false,
+                }}
+            >
+                {userMarker}
+                {markers}
+                {incidentMarkers}
+            </GoogleMap>
+            
+            <button onClick={recenterOnRoute}className='button-refocus'title="Recentrer l'itinéraire">  
+                <img src="/target.svg"alt="Recentrer"/>
+            </button>
+        </div>
     );
 }

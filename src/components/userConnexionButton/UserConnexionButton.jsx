@@ -66,7 +66,6 @@ export default function UserConnexionButton({ setIsModalOpen }) {
                 </>
             )}
 
-            {/* Modals */}
             <Modal show={modalState.login} onHide={() => handleModal('login', false)} centered>
                 <Modal.Body>
                     <Login toggleRegisterModal={() => handleModal('register', true)} />
