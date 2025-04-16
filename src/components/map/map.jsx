@@ -212,9 +212,12 @@ export default function Map({ routes = [], selectedRouteIndex = 0, incidents = [
                 {incidentMarkers}
             </GoogleMap>
 
-            <button onClick={recenterOnRoute} className='button-refocus' title="Recentrer l'itinéraire">
-                <img src="/target.svg" alt="Recentrer" />
-            </button>
+            {routes.length > 0 && (
+                <button onClick={recenterOnRoute}className='button-refocus'title="Recentrer l'itinéraire">
+                    <img src="/target.svg" alt="Recentrer" />
+                </button>
+            )}
+
         </div>
     );
 }
