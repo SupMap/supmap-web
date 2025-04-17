@@ -10,7 +10,8 @@ export default function RoutePlanner({
     routes = [],
     setGraphhopperData,
     setSelectedRouteIndex,
-    selectedRouteIndex
+    selectedRouteIndex,
+    isLoading
 }) {
     const [startPoint, setStartPoint] = useState('');
     const [startCoordinates, setStartCoordinates] = useState(null);
@@ -23,21 +24,13 @@ export default function RoutePlanner({
     const [showCurrentLocation, setShowCurrentLocation] = useState(false);
     const [showQR, setShowQR] = useState(false);
 
-    function onLoadStart(autoC) {
-        setAutocompleteStart(autoC);
-    }
-
-    function onLoadEnd(autoC) {
-        setAutocompleteEnd(autoC);
-    }
-
     useEffect(() => {
         if (window.google && !geocoder) {
             setGeocoder(new window.google.maps.Geocoder());
         }
     }, [geocoder]);
 
-    function onPlaceChangedStart() {
+    const onPlaceChangedStart = () => {
         if (autocompleteStart) {
             const place = autocompleteStart.getPlace();
             setStartPoint(place.formatted_address || place.name);
@@ -48,9 +41,9 @@ export default function RoutePlanner({
                 });
             }
         }
-    }
+    };
 
-    function onPlaceChangedEnd() {
+    const onPlaceChangedEnd = () => {
         if (autocompleteEnd) {
             const place = autocompleteEnd.getPlace();
             setDestination(place.formatted_address || place.name);
@@ -61,9 +54,9 @@ export default function RoutePlanner({
                 });
             }
         }
-    }
+    };
 
-    function handleUseCurrentLocation() {
+    const handleUseCurrentLocation = () => {
         if (!navigator.geolocation || !geocoder) {
             alert("La géolocalisation est désactivée ou non supportée.");
             return;
@@ -90,7 +83,7 @@ export default function RoutePlanner({
                 alert("Impossible de récupérer votre position.");
             }
         );
-    }
+    };
 
     const handleStartClick = () => {
         if (startCoordinates && destinationCoordinates) {
@@ -108,7 +101,7 @@ export default function RoutePlanner({
             <Form>
                 <Form.Group className="mb-3" style={{ position: 'relative' }}>
                     <Autocomplete
-                        onLoad={onLoadStart}
+                        onLoad={setAutocompleteStart}
                         onPlaceChanged={onPlaceChangedStart}
                         options={{ componentRestrictions: { country: 'fr' } }}
                     >
@@ -124,9 +117,8 @@ export default function RoutePlanner({
                             />
                         </InputGroup>
                     </Autocomplete>
-
                     {showCurrentLocation && (
-                        <div onClick={handleUseCurrentLocation}className='dropdown-menu-current-position'>
+                        <div onClick={handleUseCurrentLocation} className="dropdown-menu-current-position">
                             <MapPin size={16} />
                             Utiliser ma position actuelle
                         </div>
@@ -135,7 +127,7 @@ export default function RoutePlanner({
 
                 <Form.Group className="mb-3">
                     <Autocomplete
-                        onLoad={onLoadEnd}
+                        onLoad={setAutocompleteEnd}
                         onPlaceChanged={onPlaceChangedEnd}
                         options={{ componentRestrictions: { country: 'fr' } }}
                     >
@@ -163,7 +155,16 @@ export default function RoutePlanner({
                     </Button>
                 </div>
 
-                <Button onClick={handleStartClick} className="w-100 primaryButton fw-bold">Démarrer</Button>
+                <Button onClick={handleStartClick} className="w-100 primaryButton fw-bold" disabled={isLoading}>
+                    {isLoading ? (
+                        <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" />
+                            Chargement...
+                        </>
+                    ) : (
+                        "Rechercher"
+                    )}
+                </Button>
             </Form>
 
             {routes.length > 0 && (
@@ -181,8 +182,7 @@ export default function RoutePlanner({
                             minute: '2-digit'
                         });
 
-                    
-                        let icon = "/path/to/road-icon.png"; 
+                        let icon = "/path/to/road-icon.png";
                         if (route.label === "Meilleur itin.") icon = "/best.png";
                         else if (route.label === "Sans péage") icon = "/peage.png";
                         else if (route.label === "Économique") icon = "/econo.png";
@@ -202,10 +202,8 @@ export default function RoutePlanner({
                                         <strong>{travelTime}</strong>{" "}
                                         <span className="text-muted">Arrivée à {arrivalTime}</span>
                                     </div>
-                                    <span
-                                        className="badge bg-light border text-dark fw-medium d-flex align-items-center gap-2"
-                                        style={{ borderRadius: '20px', fontSize: '0.9rem' }}
-                                    >
+                                    <span className="badge bg-light border text-dark fw-medium d-flex align-items-center gap-2"
+                                          style={{ borderRadius: '20px', fontSize: '0.9rem' }}>
                                         <img src={icon} alt="Icon" style={{ width: '30px', height: '30px' }} />
                                         {route.label}
                                     </span>
@@ -218,8 +216,7 @@ export default function RoutePlanner({
 
                     {destination && (
                         <div className="mt-3 text-center">
-                            <div onClick={() => setShowQR(!showQR)}
-                                 style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                            <div onClick={() => setShowQR(!showQR)} style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                                 <QrCode size={24} />
                                 <span>Générer QR Code</span>
                             </div>

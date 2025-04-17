@@ -14,6 +14,8 @@ export default function HomePage() {
     const [incidents, setIncidents] = useState([]);
     const [selectedRouteIndex, setSelectedRouteIndex] = useState(0);
     const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+    const [isLoading, setIsLoading] = useState(false);
+
 
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey,
@@ -33,33 +35,36 @@ export default function HomePage() {
     }
 
     async function handleNavigationStart(start, destination, travelMode) {
+        setIsLoading(true); 
         setRoutes([]);
         setGraphhopperData(null);
         setSelectedRouteIndex(0);
-
+    
         const { startParam, destinationParam } = returnNavigationParams(start, destination);
         try {
             const response = await axios.get(`http://localhost:8080/api/directions?origin=${encodeURIComponent(startParam)}&destination=${encodeURIComponent(destinationParam)}&mode=${encodeURIComponent(travelMode)}`);
+            
+            
             const fastestRaw = response.data.fastest;
             const noTollRaw = response.data.noToll;
             const economicalRaw = response.data.economical;
-
+    
             if (fastestRaw && noTollRaw && economicalRaw) {
                 const parsed = {
                     fastest: typeof fastestRaw === 'string' ? JSON.parse(fastestRaw) : fastestRaw,
                     noToll: typeof noTollRaw === 'string' ? JSON.parse(noTollRaw) : noTollRaw,
                     economical: typeof economicalRaw === 'string' ? JSON.parse(economicalRaw) : economicalRaw
                 };
-
+    
                 const routesList = [
                     { label: "Meilleur itin.", data: parsed.fastest },
                     { label: "Sans péage", data: parsed.noToll },
                     { label: "Économique", data: parsed.economical }
                 ];
-
+    
                 const uniqueRoutes = [];
                 const setOfRoutes = new Set();
-
+    
                 for (const route of routesList) {
                     const encoded = route.data?.paths?.[0]?.points;
                     if (encoded && !setOfRoutes.has(encoded)) {
@@ -67,7 +72,7 @@ export default function HomePage() {
                         uniqueRoutes.push(route);
                     }
                 }
-
+    
                 setRoutes(uniqueRoutes);
                 setGraphhopperData(uniqueRoutes[0]?.data || null);
             } else if (response.data?.paths) {
@@ -79,8 +84,11 @@ export default function HomePage() {
             }
         } catch (error) {
             console.error("Erreur lors de l'obtention de l'itinéraire :", error);
+        } finally {
+            setIsLoading(false);
         }
     }
+    
 
     async function fetchIncidents() {
         try {
@@ -125,12 +133,14 @@ export default function HomePage() {
             <UserConnexionButton setIsModalOpen={setIsModalOpen} />
             {!isModalOpen && (
                 <RoutePlanner
-                    onStartNavigation={handleNavigationStart}
-                    routes={routes}
-                    setGraphhopperData={setGraphhopperData}
-                    setSelectedRouteIndex={setSelectedRouteIndex}
-                    selectedRouteIndex={selectedRouteIndex}
-                />
+                onStartNavigation={handleNavigationStart}
+                routes={routes}
+                setGraphhopperData={setGraphhopperData}
+                setSelectedRouteIndex={setSelectedRouteIndex}
+                selectedRouteIndex={selectedRouteIndex}
+                isLoading={isLoading} 
+            />
+            
             )}
             <div className="map">
                 <Map
