@@ -11,7 +11,6 @@ export default function HomePage() {
     const [graphhopperData, setGraphhopperData] = useState(null);
     const [routes, setRoutes] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [incidents, setIncidents] = useState([]);
     const [selectedRouteIndex, setSelectedRouteIndex] = useState(0);
     const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     const [isLoading, setIsLoading] = useState(false);
@@ -44,27 +43,26 @@ export default function HomePage() {
         try {
             const response = await axios.get(`http://localhost:8080/api/directions?origin=${encodeURIComponent(startParam)}&destination=${encodeURIComponent(destinationParam)}&mode=${encodeURIComponent(travelMode)}`);
             
-            
             const fastestRaw = response.data.fastest;
             const noTollRaw = response.data.noToll;
             const economicalRaw = response.data.economical;
-    
+            
             if (fastestRaw && noTollRaw && economicalRaw) {
                 const parsed = {
                     fastest: typeof fastestRaw === 'string' ? JSON.parse(fastestRaw) : fastestRaw,
                     noToll: typeof noTollRaw === 'string' ? JSON.parse(noTollRaw) : noTollRaw,
                     economical: typeof economicalRaw === 'string' ? JSON.parse(economicalRaw) : economicalRaw
                 };
-    
+                
                 const routesList = [
                     { label: "Meilleur itin.", data: parsed.fastest },
                     { label: "Sans péage", data: parsed.noToll },
                     { label: "Économique", data: parsed.economical }
                 ];
-    
+                
                 const uniqueRoutes = [];
                 const setOfRoutes = new Set();
-    
+                
                 for (const route of routesList) {
                     const encoded = route.data?.paths?.[0]?.points;
                     if (encoded && !setOfRoutes.has(encoded)) {
@@ -72,9 +70,10 @@ export default function HomePage() {
                         uniqueRoutes.push(route);
                     }
                 }
-    
+                
                 setRoutes(uniqueRoutes);
                 setGraphhopperData(uniqueRoutes[0]?.data || null);
+                console.log(uniqueRoutes[0]?.data);
             } else if (response.data?.paths) {
                 const route = { label: "Meilleur itin.", data: response.data };
                 setRoutes([route]);
@@ -88,23 +87,6 @@ export default function HomePage() {
             setIsLoading(false);
         }
     }
-    
-
-    async function fetchIncidents() {
-        try {
-            const token = localStorage.getItem("token");
-            const response = await axios.get("http://localhost:8080/api/incidents", {
-                headers: { Authorization: `${token}` }
-            });
-            if (response.data) setIncidents(response.data);
-        } catch (error) {
-            console.error("Erreur lors de la récupération des incidents :", error);
-        }
-    }
-
-    useEffect(() => {
-        fetchIncidents();
-    }, []);
 
     useEffect(() => {
         const handleRouteSelection = (e) => {
@@ -145,7 +127,6 @@ export default function HomePage() {
             <div className="map">
                 <Map
                     routes={routes}
-                    incidents={incidents}
                     selectedRouteIndex={selectedRouteIndex}
                 />
             </div>

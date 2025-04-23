@@ -1,6 +1,7 @@
 import { GoogleMap, Marker } from '@react-google-maps/api';
 import { useEffect, useRef, useState } from 'react';
 import polyline from '@mapbox/polyline';
+import axios from "axios";
 
 const containerStyle = {
     width: '100vw',
@@ -9,17 +10,49 @@ const containerStyle = {
 
 const defaultCenter = { lat: 47.383333, lng: 0.683333 };
 
-export default function Map({ routes = [], selectedRouteIndex = 0, incidents = [] }) {
+export default function Map({ routes = [], selectedRouteIndex = 0}) {
     const [center, setCenter] = useState(defaultCenter);
     const [userLocation, setUserLocation] = useState(null);
     const mapRef = useRef(null);
     const routePolylinesRef = useRef([]);
     const durationMarkersRef = useRef([]);
     const initialZoom = 14;
+    const [incidents, setIncidents] = useState([]);
+
+    const typeIdToIconMap = {
+        1: '/collision.svg',
+        3: '/blesses.svg',
+        4: '/embouteillage.svg',
+        6: '/bloquee.svg',
+        7: '/travaux.svg',
+        8: '/radar.svg',
+        9: '/police.svg',
+        10: '/debris.svg',
+        11: '/animal.svg'
+    };
 
     function onLoad(map) {
         mapRef.current = map;
     }
+    
+    async function fetchIncidents() {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.get("http://localhost:8080/api/incidents", {
+                headers: { Authorization: `${token}` }
+            });
+            if (response.data) setIncidents(response.data);
+        } catch (error) {
+            console.error("Erreur lors de la récupération des incidents :", error);
+        }
+    }
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            fetchIncidents();
+        }, 10000); 
+        return () => clearInterval(intervalId);
+    }, []);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -184,14 +217,18 @@ export default function Map({ routes = [], selectedRouteIndex = 0, incidents = [
         );
     })();
 
-    const incidentMarkers = incidents.map((incident, idx) => (
-        <Marker
-            key={idx}
-            position={{ lat: incident.latitude, lng: incident.longitude }}
-            title={`Incident (type ${incident.typeId})`}
-            icon={{ url: '/accident.svg', scaledSize: new window.google.maps.Size(30, 30) }}
-        />
-    ));
+
+    const incidentMarkers = incidents.map((incident, idx) => {
+        const iconUrl = typeIdToIconMap[incident.typeId] || '/other.svg';
+        console.log(iconUrl);
+        return (
+            <Marker
+                key={idx}
+                position={{ lat: incident.latitude, lng: incident.longitude }}
+                title={`Incident (type ${incident.typeId})`}
+                icon={{ url: iconUrl, scaledSize: new window.google.maps.Size(30, 30) }} />
+        );
+    });
 
     return (
         <div style={{ position: 'relative' }}>
@@ -213,7 +250,7 @@ export default function Map({ routes = [], selectedRouteIndex = 0, incidents = [
             </GoogleMap>
 
             {routes.length > 0 && (
-                <button onClick={recenterOnRoute}className='button-refocus'title="Recentrer l'itinéraire">
+                <button onClick={recenterOnRoute} className='button-refocus' title="Recentrer l'itinéraire">
                     <img src="/target.svg" alt="Recentrer" />
                 </button>
             )}
