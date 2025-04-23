@@ -57,9 +57,7 @@ export default function Login({ toggleRegisterModal }) {
                 </Button>
             </Form>
 
-            <div className="text-center">
-                <a href="#" className="secondaryColor">Mot de passe oublié ?</a>
-            </div>
+            
 
             <div className="mt-4 text-center">
                 <p>Vous ne possédez pas de compte ?</p>
