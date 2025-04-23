@@ -57,16 +57,26 @@ export default function UserInformations({ handleClose }) {
                     </div>
 
                     <div className="p-3 bg-light border rounded w-100 text-center mb-3">
-                        <FaExclamationTriangle className="mb-2 fs-4  text-warning rounded p-1" />
+                        <FaExclamationTriangle className="mb-2 fs-4 text-warning rounded p-1" />
                         <h5 className="mb-1 mt-2">Signalements ce mois-ci :</h5>
-                        <div className="fs-4 fw-bold">{userInfos.monthlyReports || 0}</div>
+                        <div className="fs-4 fw-bold">{userInfos.contributionNumber || 0}</div>
+                    </div>
+                    <div className="p-3 bg-light border rounded w-100 text-center mb-3">
+                        <div className="fs-4 fw-bold">{userInfos.role}</div>
                     </div>
                 </div>
             ) : (
                 <p className="text-center">Chargement des informations...</p>
             )}
-
-            <Button className="w-100 mt-3 secondaryButton" onClick={handleClose}>
+            {userInfos?.role === 'Administrateur' && (
+                <Button
+                    className="w-100 mb-2 primaryButton"
+                    onClick={() => window.location.href = "/stats"}
+                >
+                    Accéder aux statistiques
+                </Button>
+            )}
+            <Button className="w-100 secondaryButton" onClick={handleClose}>
                 Fermer
             </Button>
         </div>
