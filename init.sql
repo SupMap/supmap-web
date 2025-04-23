@@ -133,3 +133,5 @@ VALUES (
            6,
            ST_SetSRID(ST_MakePoint(0.7038658958513232, 47.41738403159333), 4326)
        );
+
+INSERT INTO roles (name) VALUES ('Contributeur');
