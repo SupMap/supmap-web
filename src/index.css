@@ -11,6 +11,7 @@
   color: var(--secondaryColor);
 }
 
+
 .primaryButton, .primaryButton:disabled {
   background-color: var(--primaryColor);
   color: white;
@@ -21,18 +22,34 @@
   background-color: rgba(61, 38, 131, 0.8);
 }
 
-.secondaryButton, .secondaryButton:disabled  {
+
+.primaryButton:focus, .primaryButton:active {
+  background-color: var(--primaryColor);
+  box-shadow: none; 
+}
+
+
+.secondaryButton, .secondaryButton:disabled {
   background-color: var(--secondaryColor);
   color: white;
   border: none;
 }
 
+
 .secondaryButton:hover {
   background-color: rgba(241, 91, 78, 0.8);
 }
+
+
+.secondaryButton:focus, .secondaryButton:active {
+  background-color: var(--secondaryColor); 
+  box-shadow: none; 
+}
+
 .pac-container {
   z-index: 9999 !important;
 }
+
 .route-item {
   transition: all 0.3s ease-in-out;
 }
