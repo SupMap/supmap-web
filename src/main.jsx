@@ -7,25 +7,26 @@ import './index.css'
 import HomePage from './components/homePage/HomePage.jsx'
 import Stats from './components/stats/Stats.jsx';
 
+const hash = window.location.hash
+if (hash.startsWith('#token=')) {
+  const token = hash.substring(7)
+  localStorage.setItem('token', "Bearer " + token)
+  window.history.replaceState(null, '', window.location.pathname + window.location.search)
+}
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Root />,
     children: [
-      {
-        path:"/",
-        element: <HomePage />
-      },
-      {
-        path: "/stats",
-        element: <Stats />
-      }    
+      { path:"/", element: <HomePage /> },
+      { path: "/stats", element: <Stats /> }
     ]
-  } 
+  }
 ])
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
+    <StrictMode>
+      <RouterProvider router={router} />
+    </StrictMode>,
 )

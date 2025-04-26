@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { Button, Form } from 'react-bootstrap';
+import React, {useState} from 'react';
+import {Button, Form} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 
 
-export default function Login({ toggleRegisterModal }) {
+export default function Login({toggleRegisterModal}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -23,7 +23,7 @@ export default function Login({ toggleRegisterModal }) {
         } catch (err) {
             setError("Email ou mot de passe incorrect");
         }
-    };
+    }
 
     return (
         <div>
@@ -57,13 +57,22 @@ export default function Login({ toggleRegisterModal }) {
                 </Button>
             </Form>
 
-            
+            <Button
+                variant="outline-danger"
+                className="w-100 mb-3"
+                onClick={() => {
+                    window.location.href = "http://localhost:8080/api/oauth2/authorization/google";
+                }}
+            >
+                Se connecter avec Google
+            </Button>
+
 
             <div className="mt-4 text-center">
                 <p>Vous ne possédez pas de compte ?</p>
-                <span 
+                <span
                     className="primaryColor fw-bold cursor-pointer"
-                    style={{ cursor: "pointer" }}
+                    style={{cursor: "pointer"}}
                     onClick={toggleRegisterModal}
                 >
                     Inscrivez-vous ici
