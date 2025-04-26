@@ -85,13 +85,12 @@ export default function Register({ toggleLoginModal }) {
                     S'inscrire
                 </Button>
                 <Button
-                    variant="outline-danger"
-                    className="w-100 mb-3"
+                    className=" googleButton"
                     onClick={() => {
                         window.location.href = "http://localhost:8080/api/oauth2/authorization/google";
                     }}
                 >
-                    S'inscrire avec
+                    S'inscrire avec Google<img src="/google_logo.png" alt="Google" className="ms-2" style={{ width: "20px" }} />
                 </Button>
             </Form>
 

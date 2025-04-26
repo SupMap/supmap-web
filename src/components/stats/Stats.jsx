@@ -1,41 +1,48 @@
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
-
-const COLORS = ["#007bff", "#dc3545"];
 
 const Stats = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    fetchStats();
+    fetchUserInfo();
   }, []);
 
-  const formatNumber = (val) =>
-    typeof val === "number" ? new Intl.NumberFormat("fr-FR").format(val) : val;
-
-  async function fetchStats() {
+  async function fetchUserInfo() {
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Utilisateur non authentifié");
 
-      const response = await axios.get("http://localhost:8080/api/stats", {
+      const response = await axios.get("http://localhost:8080/api/user/info", {
         headers: { Authorization: `${token}` },
       });
 
+      const userData = response.data;
+      setUser(userData);
+
+      if (userData.role !== "Administrateur") {
+        navigate("/404");
+      } else {
+        fetchStats();
+      }
+    } catch (err) {
+      console.error("Erreur lors de la récupération de l'utilisateur :", err);
+      navigate("/404");
+    }
+  }
+
+  async function fetchStats() {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:8080/api/stats", {
+        headers: { Authorization: `${token}` },
+      });
       setStats(response.data);
       setError(null);
     } catch (err) {
@@ -45,6 +52,8 @@ const Stats = () => {
       setLoading(false);
     }
   }
+
+  const formatNumber = (val) => typeof val === "number" ? new Intl.NumberFormat("fr-FR").format(val) : val;
 
   if (loading)
     return (
@@ -77,9 +86,9 @@ const Stats = () => {
     { label: "Incidents cette année", value: stats.incidentsThisYear },
   ];
 
-  const annualTrips = stats.tripsPerYear || []; 
-  const annualIncidents = stats.incidentsPerYear || []; 
-  
+  const annualTrips = stats.tripsPerYear || [];
+  const annualIncidents = stats.incidentsPerYear || [];
+
   return (
     <div className="container py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -119,7 +128,7 @@ const Stats = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="trips" stroke={COLORS[0]} />
+                <Line type="monotone" dataKey="trips"  />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -151,7 +160,7 @@ const Stats = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="incidents" stroke={COLORS[1]} />
+                <Line type="monotone" dataKey="incidents"  />
               </LineChart>
             </ResponsiveContainer>
           </div>

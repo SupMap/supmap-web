@@ -133,4 +133,27 @@ div[aria-label="Your location"] {
 }
 
 
+.googleButton {
+  background-color: white;
+  border: 1px solid var(--secondaryColor); 
+  color: var(--secondaryColor); 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+}
+
+.googleButton:hover {
+  background-color: var(--primaryColor);
+  color: white; 
+  border: 1px solid var(--primaryColor);
+  transform: translateY(-2px); 
+}
+
+
+
+
 
