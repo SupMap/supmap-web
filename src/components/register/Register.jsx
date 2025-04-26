@@ -33,7 +33,7 @@ export default function Register({ toggleLoginModal }) {
     return (
         <div>
             <div className="d-flex justify-content-center">
-                <img src="MAP2-300.png" alt="Map" className="img-fluid mb-4 w-25"/>
+                <img src="MAP2-300.png" alt="Map" className="img-fluid mb-4 w-25" />
             </div>
 
             <h2 className="text-center fw-bold mb-4 primaryColor">Bienvenue parmi nous!</h2>
@@ -84,12 +84,21 @@ export default function Register({ toggleLoginModal }) {
                 <Button type="submit" className="w-100 mb-3 secondaryButton">
                     S'inscrire
                 </Button>
+                <Button
+                    variant="outline-danger"
+                    className="w-100 mb-3"
+                    onClick={() => {
+                        window.location.href = "http://localhost:8080/api/oauth2/authorization/google";
+                    }}
+                >
+                    S'inscrire avec
+                </Button>
             </Form>
 
             <div className="mt-4 text-center">
                 <p>Vous possédez déjà un compte ?</p>
-                <span 
-                    onClick={toggleLoginModal} 
+                <span
+                    onClick={toggleLoginModal}
                     className="primaryColor fw-bold cursor-pointer"
                     style={{ cursor: "pointer" }}
                 >

@@ -6,6 +6,7 @@ import Root from './components/root/Root.jsx'
 import './index.css'
 import HomePage from './components/homePage/HomePage.jsx'
 import Stats from './components/stats/Stats.jsx';
+import ErrorBoundary from './components/ErrorBoundary/errorBoundary.jsx'
 
 const hash = window.location.hash
 if (hash.startsWith('#token=')) {
@@ -20,7 +21,8 @@ const router = createBrowserRouter([
     element: <Root />,
     children: [
       { path:"/", element: <HomePage /> },
-      { path: "/stats", element: <Stats /> }
+      { path: "/stats", element: <Stats /> },
+      { path: "*", element: <ErrorBoundary /> }
     ]
   }
 ])

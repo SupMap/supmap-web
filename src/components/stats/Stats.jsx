@@ -48,27 +48,9 @@ const Stats = () => {
 
   if (loading)
     return (
-      <div
-        style={{
-          width: "100vw",
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
-        }}
-      >
-        <p
-          style={{
-            fontSize: "1.8rem",
-            fontWeight: "bold",
-            marginBottom: "1.5rem",
-          }}
-        >
-          Chargement des données...
-        </p>
-        <img src="/MAP2-300.png" alt="Chargement..." style={{ maxWidth: "300px" }} />
+      <div className="center-container">
+        <img src="/MAP2-300.png" alt="Chargement..." className="center-image" />
+        <p className="center-message">Chargement des données...</p>
       </div>
     );
 

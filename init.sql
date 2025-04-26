@@ -24,6 +24,7 @@ CREATE TABLE incident_types
 );
 -------------------------------------------
 -- Table des roles
+    
 -------------------------------------------
 CREATE TABLE roles
 (
@@ -43,7 +44,7 @@ CREATE TABLE users
     email         VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     creation_date TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    oauth2_id     INT,
+    oauth2_id     VARCHAR(255),
     role          INT          NOT NULL DEFAULT 1 REFERENCES roles (role_id),
     contribution  INT          NOT NULL DEFAULT 0
 );
@@ -75,7 +76,8 @@ CREATE TABLE routes
     total_duration DOUBLE PRECISION,
     calculated_at  TIMESTAMP                   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     custom_model   VARCHAR(50),
-    mode           VARCHAR(15)                 NOT NULL DEFAULT 'car'
+    mode           VARCHAR(15)                 NOT NULL DEFAULT 'car',
+    active       BOOLEAN                        NOT NULL DEFAULT TRUE
 );
 ------------------------------------------------
 -- Insertion des données
@@ -85,6 +87,7 @@ CREATE TABLE routes
 INSERT INTO roles (name) VALUES ('Utilisateur');
 INSERT INTO roles (name) VALUES ('Modérateur');
 INSERT INTO roles (name) VALUES ('Administrateur');
+INSERT INTO roles (name) VALUES ('Contributeur');
 
 -- Insertion des catégories d'incidents
 INSERT INTO incident_categories (name) VALUES ('Accident');
@@ -128,10 +131,3 @@ VALUES
 
 
 
-INSERT INTO incidents (type_id, location)
-VALUES (
-           6,
-           ST_SetSRID(ST_MakePoint(0.7038658958513232, 47.41738403159333), 4326)
-       );
-
-INSERT INTO roles (name) VALUES ('Contributeur');

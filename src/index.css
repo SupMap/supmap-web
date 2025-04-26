@@ -98,3 +98,39 @@ button[title="Your location"],
 div[aria-label="Your location"] {
   display: none !important;
 }
+
+.center-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.center-message {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+.center-description {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.center-info {
+  font-size: 1rem;
+  color: #999;
+  margin-bottom: 2rem;
+}
+
+.center-image {
+  max-width: 300px;
+  margin-bottom: 2rem;
+}
+
+
+
