@@ -34,35 +34,35 @@ export default function HomePage() {
     }
 
     async function handleNavigationStart(start, destination, travelMode) {
-        setIsLoading(true); 
+        setIsLoading(true);
         setRoutes([]);
         setGraphhopperData(null);
         setSelectedRouteIndex(0);
-    
+
         const { startParam, destinationParam } = returnNavigationParams(start, destination);
         try {
             const response = await axios.get(`http://localhost:8080/api/directions?origin=${encodeURIComponent(startParam)}&destination=${encodeURIComponent(destinationParam)}&mode=${encodeURIComponent(travelMode)}`);
-            
+
             const fastestRaw = response.data.fastest;
             const noTollRaw = response.data.noToll;
             const economicalRaw = response.data.economical;
-            
+
             if (fastestRaw && noTollRaw && economicalRaw) {
                 const parsed = {
                     fastest: typeof fastestRaw === 'string' ? JSON.parse(fastestRaw) : fastestRaw,
                     noToll: typeof noTollRaw === 'string' ? JSON.parse(noTollRaw) : noTollRaw,
                     economical: typeof economicalRaw === 'string' ? JSON.parse(economicalRaw) : economicalRaw
                 };
-                
+
                 const routesList = [
                     { label: "Meilleur itin.", data: parsed.fastest },
                     { label: "Sans péage", data: parsed.noToll },
                     { label: "Économique", data: parsed.economical }
                 ];
-                
+
                 const uniqueRoutes = [];
                 const setOfRoutes = new Set();
-                
+
                 for (const route of routesList) {
                     const encoded = route.data?.paths?.[0]?.points;
                     if (encoded && !setOfRoutes.has(encoded)) {
@@ -70,7 +70,7 @@ export default function HomePage() {
                         uniqueRoutes.push(route);
                     }
                 }
-                
+
                 setRoutes(uniqueRoutes);
                 setGraphhopperData(uniqueRoutes[0]?.data || null);
                 console.log(uniqueRoutes[0]?.data);
@@ -102,9 +102,9 @@ export default function HomePage() {
     if (!isLoaded) {
         return (
             <div className="center-container">
-            <img src="/MAP2-300.png" alt="Chargement..." className="center-image" />
-            <p className="center-message">Chargement de la carte en cours...</p>
-          </div>
+                <img src="/MAP2-300.png" alt="Chargement..." className="center-image" />
+                <p className="center-message">Chargement de la carte en cours...</p>
+            </div>
         );
     }
 
@@ -113,14 +113,14 @@ export default function HomePage() {
             <UserConnexionButton setIsModalOpen={setIsModalOpen} />
             {!isModalOpen && (
                 <RoutePlanner
-                onStartNavigation={handleNavigationStart}
-                routes={routes}
-                setGraphhopperData={setGraphhopperData}
-                setSelectedRouteIndex={setSelectedRouteIndex}
-                selectedRouteIndex={selectedRouteIndex}
-                isLoading={isLoading} 
-            />
-            
+                    onStartNavigation={handleNavigationStart}
+                    routes={routes}
+                    setGraphhopperData={setGraphhopperData}
+                    setSelectedRouteIndex={setSelectedRouteIndex}
+                    selectedRouteIndex={selectedRouteIndex}
+                    isLoading={isLoading}
+                />
+
             )}
             <div className="map">
                 <Map
@@ -128,6 +128,11 @@ export default function HomePage() {
                     selectedRouteIndex={selectedRouteIndex}
                 />
             </div>
+            <div className="custom-map-logo">
+                <img src="/x.png" alt="collab" height={"15px"}style={{ marginTop: '8px' }} />
+                <img src="/MAP2-300.png" alt="Notre Marque" height={"36px"}style={{ marginLeft: '5px' }}  />
+            </div>
         </div>
+
     );
 }

@@ -153,6 +153,15 @@ div[aria-label="Your location"] {
   transform: translateY(-2px); 
 }
 
+.custom-map-logo {
+  position: absolute;
+  bottom: 1px;
+  left: 70px; 
+  z-index: 1000;
+  opacity: 0.9;
+}
+
+
 
 
 
