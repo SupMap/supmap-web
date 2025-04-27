@@ -1,4 +1,4 @@
-# Docker Compose Uniquement si vous souhaitez utiliser en téléchargeant chaque repositories à partir de GitHub !!
+# Docker Compose - Mode Développement Local - Avec Runtime Dynamic Configuration
 name: supmap
 
 services:
@@ -6,7 +6,7 @@ services:
   web:
     container_name: supmap-web
     build:
-      context: .  # Dossier actuel pour Web
+      context: .  # Dossier actuel pour le Web
       dockerfile: Dockerfile
     image: supmap-web
     ports:
