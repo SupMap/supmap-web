@@ -2,17 +2,49 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Button, Container } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import axios from 'axios';
 import Login from '../login/Login';
 import Register from '../register/Register';
 import UserInformations from '../userInformations/UserInformations';
 
 export default function UserConnexionButton({ setIsModalOpen }) {
-    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("token"));
+    const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem("token"));
     const [modalState, setModalState] = useState({
         login: false,
         register: false,
         userInfo: false
     });
+
+    useEffect(() => {
+        async function verifyToken() {
+            const token = localStorage.getItem("token");
+            if (token) {
+                try {
+                    await axios.get('http://localhost:8080/api/user/info', {
+                        headers: { Authorization: `${token}` }
+                    });
+                } catch (err) {
+                    console.error("Token invalide ou expiré :", err);
+                    localStorage.removeItem("token");
+                    setIsAuthenticated(false);
+                }
+            }
+        }
+
+        verifyToken();
+
+        setIsAuthenticated(!!localStorage.getItem("token"));
+
+        function updateAuthState() {
+            setIsAuthenticated(!!localStorage.getItem("token"));
+        }
+
+        window.addEventListener("storage", updateAuthState);
+
+        return () => {
+            window.removeEventListener("storage", updateAuthState);
+        };
+    }, []);
 
     function handleModal(modal, state) {
         setModalState({ login: false, register: false, userInfo: false, [modal]: state });
@@ -23,18 +55,6 @@ export default function UserConnexionButton({ setIsModalOpen }) {
         localStorage.removeItem("token");
         setIsAuthenticated(false);
     }
-
-       useEffect(() => {
-        function updateAuthState() {
-            setIsAuthenticated(!!localStorage.getItem("token"));
-        };
-
-        window.addEventListener("storage", updateAuthState);
-
-        return () => {
-            window.removeEventListener("storage", updateAuthState);
-        };
-    }, []);
 
     return (
         <Container fluid className="position-fixed top-0 end-0 p-2 d-flex flex-row justify-content-end gap-2" style={{ zIndex: 2000 }}>
@@ -50,14 +70,14 @@ export default function UserConnexionButton({ setIsModalOpen }) {
             ) : (
                 <>
                     <Button
-                        className={`btn fw-bold primaryButton`}
+                        className="btn fw-bold primaryButton"
                         onClick={() => handleModal('register', true)}
                         disabled={modalState.login}
                     >
                         S'inscrire
                     </Button>
                     <Button
-                        className={`btn fw-bold secondaryButton`}
+                        className="btn fw-bold secondaryButton"
                         onClick={() => handleModal('login', true)}
                         disabled={modalState.register}
                     >
