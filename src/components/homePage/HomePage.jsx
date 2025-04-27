@@ -12,7 +12,7 @@ export default function HomePage() {
     const [routes, setRoutes] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedRouteIndex, setSelectedRouteIndex] = useState(0);
-    const googleMapsApiKey = "VITE_GOOGLE_MAPS_API_KEY_PLACEHOLDER";
+    const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "VITE_GOOGLE_MAPS_API_KEY_PLACEHOLDER";
     const [isLoading, setIsLoading] = useState(false);
 
 
