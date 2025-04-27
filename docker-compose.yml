@@ -8,6 +8,7 @@ services:
     build:
       context: .  # Dossier actuel pour le Web
       dockerfile: Dockerfile
+      restart: always
     image: supmap-web
     ports:
       - "${WEB_PORT}:80"
@@ -23,6 +24,7 @@ services:
     build:
       context: ../supmap-api  # Dossier parent pour l'API
       dockerfile: Dockerfile
+      restart: always
     image: supmap-api
     ports:
       - "${API_PORT}:8080"
