@@ -1,8 +1,23 @@
-# React + Vite
+# Frontend Web - Projet 4PROJ
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface web de gestion et de visualisation en temps réel des données de circulation pour l’application de navigation collaborative, développée dans le cadre du projet de fin d’année.
 
-Currently, two official plugins are available:
+## 📦 Technologies utilisées
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [React](https://react.dev/)
+- [Vite](https://vitejs.dev/)
+- [TypeScript](https://www.typescriptlang.org/) 
+- [Tailwind CSS](https://tailwindcss.com/) 
+- Axios (ou Fetch API)
+- OAuth2 (Google)
+- Docker
+
+## 🚀 Fonctionnalités principales
+
+- Connexion sécurisée via OAuth2
+- Affichage de la carte avec itinéraires optimisés en temps réel
+- Visualisation des signalements (accidents, embouteillages, etc.)
+- Envoi d’itinéraires vers l’application mobile (via QR Code)
+- Statistiques et tableau de bord (analyses, prédictions, etc.)
+
+
