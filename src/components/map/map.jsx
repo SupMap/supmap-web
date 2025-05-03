@@ -37,9 +37,7 @@ export default function Map({ routes = [], selectedRouteIndex = 0}) {
     
     async function fetchIncidents() {
         try {
-            const token = localStorage.getItem("token");
             const response = await axios.get("http://localhost:8080/api/incidents", {
-                headers: { Authorization: `${token}` }
             });
             if (response.data) setIncidents(response.data);
         } catch (error) {
