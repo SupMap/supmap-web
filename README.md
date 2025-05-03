@@ -10,7 +10,7 @@ Interface web de gestion et de visualisation en temps réel des données de circ
 - [Tailwind CSS](https://tailwindcss.com/) 
 - Axios (ou Fetch API)
 - OAuth2 (Google)
-- Docker
+- Docker (vous pouvez déployer localement directement ici avec le dockercompose fournis, pour cela vous devez avoir les 3 repos github clonés)
 
 ## 🚀 Fonctionnalités principales
 

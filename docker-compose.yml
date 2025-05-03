@@ -1,4 +1,4 @@
-# Docker Compose - Mode Développement Local - Avec Runtime Dynamic Configuration
+# Docker Compose - Mode Développement Local - Avec les repos GitHub
 name: supmap
 
 services:
