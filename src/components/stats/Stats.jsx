@@ -75,9 +75,10 @@ const Stats = () => {
     { label: "Trajets aujourd’hui", value: stats.tripsToday },
     { label: "Trajets ce mois", value: stats.tripsThisMonth },
     { label: "Trajets cette année", value: stats.tripsThisYear },
-    { label: "Durée moyenne", value: `${stats.averageTripDuration} min` },
-    { label: "Distance moyenne", value: `${stats.averageTripDistance} km` },
+    { label: "Durée moyenne", value: `${(stats.averageTripDuration / 60000).toFixed(1)} min` },
+    { label: "Distance moyenne", value: `${(stats.averageTripDistance / 1000).toFixed(1)} km` },
   ];
+  
 
   const allStatsIncidents = [
     { label: "Incidents en cours", value: stats.ongoingIncidents },
@@ -128,7 +129,7 @@ const Stats = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="trips"  />
+                <Line type="monotone" dataKey="trips" />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -160,7 +161,7 @@ const Stats = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="incidents"  />
+                <Line type="monotone" dataKey="incidents" />
               </LineChart>
             </ResponsiveContainer>
           </div>

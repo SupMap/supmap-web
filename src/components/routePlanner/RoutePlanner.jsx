@@ -3,6 +3,7 @@ import { Button, Form, InputGroup } from 'react-bootstrap';
 import { Bike, Car, Flag, Footprints, MapPin, QrCode } from "lucide-react";
 import { Autocomplete } from '@react-google-maps/api';
 import QRCode from 'react-qr-code';
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function RoutePlanner({
@@ -95,9 +96,53 @@ export default function RoutePlanner({
         }
     };
 
+    const handleQRCodeClick = async () => {
+        setShowQR(!showQR);
+    
+        if (!showQR) {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.warn("Utilisateur non connecté. Itinéraire non sauvegardé.");
+                return;
+            }
+    
+            const selectedRoute = routes[selectedRouteIndex];
+            const path = selectedRoute?.data?.paths?.[0];
+    
+            if (!path) {
+                console.warn("Aucun itinéraire sélectionné.");
+                return;
+            }
+    
+            const customModel = selectedRoute.label === "Sans péage" ? "noToll" : "default";
+    
+            try {
+                await axios.post("http://localhost:8080/api/route", {
+                    totalDuration: path.time,
+                    totalDistance: path.distance,
+                    customModel,
+                    mode: travelMode,
+                    startLocation: `${startCoordinates.lat},${startCoordinates.lng}`,
+                    endLocation: `${destinationCoordinates.lat},${destinationCoordinates.lng}`,
+                    route: path.points
+                }, {
+                    headers: {
+                        Authorization: `${token}`
+                    }
+                });
+    
+                console.log("✅ Itinéraire sauvegardé et envoyé au mobile !");
+            } catch (error) {
+                console.error("❌ Erreur lors de la sauvegarde de l'itinéraire :", error);
+            }
+        }
+    };
+    
+    
+
     return (
         <div className="position-absolute start-0 ms-3 p-3 shadow-lg bg-white bg-opacity-75"
-             style={{ top: '20px', width: '360px', zIndex: 2000 }}>
+            style={{ top: '20px', width: '360px', zIndex: 2000 }}>
             <Form>
                 <Form.Group className="mb-3" style={{ position: 'relative' }}>
                     <Autocomplete
@@ -203,7 +248,7 @@ export default function RoutePlanner({
                                         <span className="text-muted">Arrivée à {arrivalTime}</span>
                                     </div>
                                     <span className="badge bg-light border text-dark fw-medium d-flex align-items-center gap-2"
-                                          style={{ borderRadius: '20px', fontSize: '0.9rem' }}>
+                                        style={{ borderRadius: '20px', fontSize: '0.9rem' }}>
                                         <img src={icon} alt="Icon" style={{ width: '30px', height: '30px' }} />
                                         {route.label}
                                     </span>
@@ -216,9 +261,9 @@ export default function RoutePlanner({
 
                     {destination && (
                         <div className="mt-3 text-center">
-                            <div onClick={() => setShowQR(!showQR)} style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                            <div onClick={handleQRCodeClick} style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                                 <QrCode size={24} />
-                                <span>Générer QR Code</span>
+                                <span>Envoyer au Mobile</span>
                             </div>
                             {showQR && (
                                 <div className="mt-3">
