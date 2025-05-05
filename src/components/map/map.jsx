@@ -10,13 +10,14 @@ const containerStyle = {
 
 const defaultCenter = { lat: 47.383333, lng: 0.683333 };
 
-export default function Map({ routes = [], selectedRouteIndex = 0}) {
+export default function Map({ routes = [], selectedRouteIndex = 0 }) {
     const [center, setCenter] = useState(defaultCenter);
     const [userLocation, setUserLocation] = useState(null);
     const mapRef = useRef(null);
     const routePolylinesRef = useRef([]);
     const durationMarkersRef = useRef([]);
     const initialZoom = 14;
+    const [zoomLevel, setZoomLevel] = useState(initialZoom);
     const [incidents, setIncidents] = useState([]);
 
     const typeIdToIconMap = {
@@ -34,7 +35,7 @@ export default function Map({ routes = [], selectedRouteIndex = 0}) {
     function onLoad(map) {
         mapRef.current = map;
     }
-    
+
     async function fetchIncidents() {
         try {
             const response = await axios.get("http://localhost:8080/api/incidents", {
@@ -48,7 +49,7 @@ export default function Map({ routes = [], selectedRouteIndex = 0}) {
     useEffect(() => {
         const intervalId = setInterval(() => {
             fetchIncidents();
-        }, 10000); 
+        }, 10000);
         return () => clearInterval(intervalId);
     }, []);
 
@@ -216,17 +217,22 @@ export default function Map({ routes = [], selectedRouteIndex = 0}) {
     })();
 
 
-    const incidentMarkers = incidents.map((incident, idx) => {
-        const iconUrl = typeIdToIconMap[incident.typeId] || '/other.svg';
-        console.log(iconUrl);
-        return (
-            <Marker
-                key={idx}
-                position={{ lat: incident.latitude, lng: incident.longitude }}
-                title={`Incident (type ${incident.typeId})`}
-                icon={{ url: iconUrl, scaledSize: new window.google.maps.Size(30, 30) }} />
-        );
-    });
+    const incidentMarkers = zoomLevel >= 14
+        ? incidents.map((incident, idx) => {
+            const iconUrl = typeIdToIconMap[incident.typeId] || '/other.svg';
+            return (
+                <Marker
+                    key={idx}
+                    position={{ lat: incident.latitude, lng: incident.longitude }}
+                    title={`Incident (type ${incident.typeId})`}
+                    icon={{
+                        url: iconUrl,
+                        scaledSize: new window.google.maps.Size(30, 30)
+                    }}
+                />
+            );
+        })
+        : [];
 
     return (
         <div style={{ position: 'relative' }}>
@@ -235,6 +241,12 @@ export default function Map({ routes = [], selectedRouteIndex = 0}) {
                 center={center}
                 zoom={initialZoom}
                 onLoad={onLoad}
+                onZoomChanged={() => {
+                    if (mapRef.current) {
+                        const newZoom = mapRef.current.getZoom();
+                        setZoomLevel(newZoom);
+                    }
+                }}
                 options={{
                     disableDefaultUI: true,
                     zoomControl: true,
