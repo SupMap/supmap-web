@@ -98,24 +98,24 @@ export default function RoutePlanner({
 
     const handleQRCodeClick = async () => {
         setShowQR(!showQR);
-    
+
         if (!showQR) {
             const token = localStorage.getItem("token");
             if (!token) {
                 console.warn("Utilisateur non connecté. Itinéraire non sauvegardé.");
                 return;
             }
-    
+
             const selectedRoute = routes[selectedRouteIndex];
             const path = selectedRoute?.data?.paths?.[0];
-    
+
             if (!path) {
                 console.warn("Aucun itinéraire sélectionné.");
                 return;
             }
-    
+
             const customModel = selectedRoute.label === "Sans péage" ? "noToll" : "default";
-    
+
             try {
                 await axios.post("http://localhost:8080/api/route", {
                     totalDuration: path.time,
@@ -130,15 +130,13 @@ export default function RoutePlanner({
                         Authorization: `${token}`
                     }
                 });
-    
+
                 console.log("✅ Itinéraire sauvegardé et envoyé au mobile !");
             } catch (error) {
                 console.error("❌ Erreur lors de la sauvegarde de l'itinéraire :", error);
             }
         }
     };
-    
-    
 
     return (
         <div className="position-absolute start-0 ms-3 p-3 shadow-lg bg-white bg-opacity-75"
@@ -259,7 +257,7 @@ export default function RoutePlanner({
                         );
                     })}
 
-                    {destination && (
+                    {destination && localStorage.getItem("token") && (
                         <div className="mt-3 text-center">
                             <div onClick={handleQRCodeClick} style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                                 <QrCode size={24} />
